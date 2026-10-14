@@ -1,6 +1,6 @@
 ---
 name: innovation-explore
-description: 科研创新点探讨阶段（阶段锁 + 渐进式披露）。仅在用户明确进入"创新点探讨 / 找创新点 / 找思路 / $innovation-explore" 时使用，或用户从一个解释不了的观察起步（"这条曲线不太对"、"少数类别越训越差"、"换个 prompt 效果就没了"）想知道它能不能成为方向时使用。两个入口：主题入口是用户给定主题与条件 → 子代理读取本地 PDF 文献并回传压缩摘要 → 用户筛选 3~5 篇最可迁移的文献 → 输出 3~5 个 ≤3 句的候选思路 → 用户挑 1~2 个逐轮加深；异常入口是先写观察句、排伪像、复现刻画，再以现象为检索词接回文献。两条路都以四问潜力卡结束。不用于实验设计、论文 framing、写作、润色或单篇论文精读。 英文触发短语：find a research direction, innovation points, brainstorm directions from these papers, this curve looks wrong is it worth pursuing, rare classes get worse while the average improves, is this anomaly a direction.
+description: 科研创新点探讨阶段（阶段锁 + 渐进式披露）。仅在用户明确进入"创新点探讨 / 找创新点 / 找思路 / $innovation-explore" 时使用，或用户从一个解释不了的观察起步（"这条曲线不太对"、"这个比例和大家以为的差太多"、"工具在这种输入上总是失败"、"几位受访者说的和文献相反"）想知道它能不能成为方向时使用。两个入口：主题入口是用户给定主题与条件 → 子代理读取本地 PDF 文献并回传压缩摘要 → 用户筛选 3~5 篇最可迁移的文献 → 输出 3~5 个 ≤3 句的候选思路 → 用户挑 1~2 个逐轮加深；异常入口是先写观察句、排伪像、复现刻画，再以现象为检索词接回文献。两条路都以四问潜力卡结束。不用于实验设计、论文 framing、写作、润色或单篇论文精读。 英文触发短语：find a research direction, innovation points, brainstorm directions from these papers, this curve looks wrong is it worth pursuing, this proportion is far from what everyone assumes, the tool keeps failing on this input, the interviewees contradict the literature, is this anomaly a direction.
 disable-model-invocation: true
 ---
 
@@ -17,14 +17,14 @@ disable-model-invocation: true
 - 严禁调用其他阶段的 Skill（paper-framing、paper-writing-orchestrator、paper-reading 的完整报告模式等）。读文献只用本 Skill 第 2 步的压缩格式。`research-pipeline` 例外：它只做阶段记录与路由，退出时可以调用。
 - 严禁一次性给出"完整方法"。每轮只推进一层。
 - 用户追问本阶段以外的内容时，只回答一句并提醒当前阶段，不展开。
-- 异常入口里的排伪像与复现刻画是诊断，不是实验设计：只用已有数据、配置和脚本，不引入新方法、不选基线、不定论文指标，产出标 exploratory。见 [anomaly-entry.md](references/anomaly-entry.md)。
+- 异常入口里的排伪像与复现刻画是诊断，不是实验设计：只用已有的材料、配置和脚本（数据、记录、代码、证明草稿都算），不引入新方法、不选基线或对照、不定论文指标，产出标 exploratory。见 [anomaly-entry.md](references/anomaly-entry.md)。
 
 ## 1. 明确主题与条件（用户负责）
 
 要求用户给出：研究主题；当前依赖的假设或条件（数据形态、可用信号、部署约束等）；已经排除的方向。
 缺项就追问，不要自行补默认值。把确认后的内容写成 ≤5 行的"研究设定"，后续每轮引用它，不重述。
 
-**入口选择。** 用户带来的是主题，走第 2–5 步。用户带来的是一个观察（一条不太对的曲线、一个解释不了的失败），先走 [异常入口](references/anomaly-entry.md) 的 A–C：写观察句、排伪像、复现刻画；伪像排除后，以现象为检索词从第 2 步接回来，文献的作用变成"有没有人报告过、在什么条件下"。两条路最后都落到同一张四问潜力卡。大多数异常最后是 bug，这不是浪费：排伪像表随方向进入 R1，paper-framing 直接引用。
+**入口选择。** 用户带来的是主题，走第 2–5 步。用户带来的是一个观察（一条不太对的曲线、一个反常的比例、一次解释不了的失败、几句与文献相反的话），先走 [异常入口](references/anomaly-entry.md) 的 A–C：写观察句、排伪像、复现刻画；伪像排除后，以现象为检索词从第 2 步接回来，文献的作用变成"有没有人报告过、在什么条件下"。两条路最后都落到同一张四问潜力卡。大多数异常最后是错误或伪像，这不是浪费：排伪像表随方向进入 R1，paper-framing 直接引用。
 
 ## 2. 读取文献（子代理，压缩回传）
 
