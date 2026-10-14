@@ -2,6 +2,8 @@
 
 R2 的协议骨架和 R3 的执行纪律对所有研究通用；每种研究类型真正不同的只有：对象和数据怎么选、怎样算成立、重复或稳健性怎么要求、结果中性检查长什么样、冻结什么算指纹、RESULT 要多记什么。这些差别一类一个文件放在这里，协议开头用 `- 研究类型：<文件名去掉 .md>` 声明；一篇论文用到两种时写主次，都要满足。
 
+类型在 R1 写 FRAMING 时按下表选定，写进 `paper/FRAMING.md` 开头的 `- 研究类型：`，两种时主在前、次在后；R2 的试点与协议继承它，改类型要写理由并修订 FRAMING。
+
 | 档案 | 适用 | 对应的 ACM SIGSOFT 经验标准 |
 |---|---|---|
 | [quantitative-experiment](quantitative-experiment.md) | 受控实验、基准评测、机器学习与算法比较、性能测试、仿真与优化研究 | Benchmarking、Data Science、Optimization Studies、Quantitative Simulation |

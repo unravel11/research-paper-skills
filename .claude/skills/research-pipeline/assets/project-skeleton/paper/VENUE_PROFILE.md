@@ -2,8 +2,8 @@
 
 > R1 列候选，R3 之后的故事结算里填"决定"。信息只用官方页面并写核验日期；经验标准按研究类型查 ACM SIGSOFT Empirical Standards。规则见 research-pipeline/references/venue-and-evidence-standards.md。
 
-- 本研究的研究类型（受控实验 / 基准或工程研究 / 仓库挖掘 / 案例研究 / 问卷 / 其他）：
-- 对应的经验标准：
+- 本研究的研究类型（与 paper/FRAMING.md 开头的 `- 研究类型：` 一致，写 methods/ 档案名）：
+- 对应的经验标准（每种类型对应哪几份 ACM SIGSOFT 标准，见 research-pipeline 的 methods/README.md）：
 
 ## 候选
 

@@ -8,7 +8,7 @@
 
 - 读者：谁在读，他们现在怎么做。
 - 奖励的贡献类型：方法、测量、实证规律、资源、阴性或边界、应用。
-- 研究类型与对应的经验标准：按 ACM SIGSOFT Empirical Standards 找到本研究类型（受控实验、基准或工程研究、仓库挖掘、案例研究、问卷等）的标准，摘出 essential 属性（任何同行评审 venue 都要求）和 desirable 属性（更强的 venue 期待）。
+- 研究类型与对应的经验标准：按 FRAMING 声明的研究类型，用 methods/README.md 的表找到对应的 ACM SIGSOFT Empirical Standards，摘出 essential 属性（任何同行评审 venue 都要求）和 desirable 属性（更强的 venue 期待）。
 - 版式与流程：页数、匿名、artifact 要求、审稿周期、有没有注册式报告 track。
 - 适合的分支：成立分支投哪，不成立分支投哪。
 - 核验日期与官方页面；排名、费用、周期这类信息会过时，只用官方来源。

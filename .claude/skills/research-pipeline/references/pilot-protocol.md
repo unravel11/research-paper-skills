@@ -14,7 +14,7 @@
 
 ```markdown
 # PILOT_<YYYYMMDD>_<短名>（exploratory）
-- 研究类型：
+- 研究类型：<与 paper/FRAMING.md 一致>
 
 ## 目的
 - 要决定的事（阈值 / 重复次数或样本量 / 分支 / 可行性）

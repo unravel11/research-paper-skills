@@ -2,7 +2,7 @@
 
 L2 的十道门对所有研究通用，问的是同一件事：从对象到结论这条证据链有没有断点。每种研究类型断点长得不一样，所以每门在不同类型里要问的具体问题不同。先确定研究类型，再按对应小节审；门的编号、状态值和处置表不变。
 
-**研究类型从哪来。** 优先读 `experiments/PROTOCOL_*.md` 第一行的 `- 研究类型：`；没有协议就看 `paper/FRAMING.md` 的研究类型候选；都没有就问用户。类型名以 `research-pipeline/references/methods/` 的档案名为准（quantitative-experiment、measurement-study、tool-or-system-evaluation、case-study-or-qualitative、human-subjects-experiment、formal-or-theoretical、replication），一篇论文用到两种就两节都审。没有声明且问不到时，按通用问法审，并在报告里写"研究类型未声明"，L2-G0 至多 `PARTIAL`。
+**研究类型从哪来。** 优先读 `experiments/PROTOCOL_*.md` 第一行的 `- 研究类型：`；没有协议就读 `paper/FRAMING.md` 开头的 `- 研究类型：`（R1 选定，R2 协议继承）；都没有就问用户。类型名以 `research-pipeline/references/methods/` 的档案名为准（quantitative-experiment、measurement-study、tool-or-system-evaluation、case-study-or-qualitative、human-subjects-experiment、formal-or-theoretical、replication），一篇论文用到两种就两节都审。没有声明且问不到时，按通用问法审，并在报告里写"研究类型未声明"，L2-G0 至多 `PARTIAL`。
 
 **记录。** `REVIEW-RECORD.json` 的 `target.research_type` 写档案名；每门的"直接证据"栏引用本节问题对应的材料。
 

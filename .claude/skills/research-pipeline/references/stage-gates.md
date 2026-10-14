@@ -11,7 +11,7 @@
 
 ## R1 主线与故事 → R2
 
-- `paper/FRAMING.md`（模板：`paper-framing/references/framing-template.md`）：一句话主张；目标读者；RQ 列表，每个 RQ 有主要比较、指标、判定规则（怎样算成立、不成立、不能判定，稳健性要求按研究类型）和阴性结果可解释的前提；最强基线及其版本来源；明确不主张什么；潜力卡有前瞻档位；产生时点（事前 / 事后）。
+- `paper/FRAMING.md`（模板：`paper-framing/references/framing-template.md`）：研究类型已声明（`- 研究类型：<档案名>`，档案在 [methods/](methods/README.md) 存在）；一句话主张；目标读者；RQ 列表，每个 RQ 有主要比较、指标、判定规则（怎样算成立、不成立、不能判定，稳健性要求按研究类型）和阴性结果可解释的前提；最强基线及其版本来源；明确不主张什么；潜力卡有前瞻档位；产生时点（事前 / 事后）。
 - `paper/STORY_SPINE.md`：读者、原信念、张力有依据；至少两个分支（成立 / 不成立），每个分支的一句话故事 ≤40 字、删除测试为"是"、有适合的 venue 候选。
 - `paper/VENUE_PROFILE.md`：2–3 个候选，每个有读者、贡献类型、essential 与 desirable 属性摘要、版式与流程、核验日期；写明协议必须覆盖的属性并集。
 - 建议：`paper-review` 的 L1 前瞻用法：framing A/B 潜力门至少一个通过，两个分支都有去处；两个 framing 都不通过就不进入 R2，先重构问题。
@@ -19,7 +19,7 @@
 
 ## R2 试点与实验协议 → R3
 
-- 研究类型已声明（`- 研究类型：<档案名>`），对应的 [methods/](methods/README.md) 档案存在，档案要求的追加字段已填。
+- 研究类型与 FRAMING 一致（协议第一行 `- 研究类型：<档案名>` 继承 R1 的声明；改了类型要在协议里写理由并修订 FRAMING），对应的 [methods/](methods/README.md) 档案存在，档案要求的追加字段已填。
 - 试做：`experiments/PILOT_<date>.md` 已完成并把结论写回潜力卡与骨架分支；或确认协议里写明"试点：免做，理由"。
 - 确认协议：见 [experiment-protocol.md](experiment-protocol.md) 检查单，通用项与档案追加项全部勾选；判定规则写了成立、不成立、不能判定三种结局；稳健性要求按档案写明；结果中性检查已写；协议覆盖 venue 候选 essential 属性的并集；协议已冻结，指纹表在协议内（`scripts/hash_files.py` 生成的 `| 路径 | SHA-256 |` 表，`check_gates.py` 逐行复核）。
 

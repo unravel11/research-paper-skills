@@ -91,7 +91,8 @@ MANUAL = {
         "从观察起步的方向：伪像排查先于重要性判断，未排除的写进前提条件，排查与刻画的产出标 exploratory",
     ],
     1: [
-        "每个 RQ 有且只有一个主要比较；判定规则写了成立、不成立、不能判定与稳健性要求（按研究类型），没有“视情况”；阴性可解释的前提已写",
+        "研究类型选对了：对照 references/methods/README.md 的适用表，两种时主次写明",
+        "每个 RQ 有且只有一个主要比较；判定规则写了成立、不成立、不能判定与稳健性要求（按研究类型档案），没有“视情况”；阴性可解释的前提已写",
         "基线是当前最强版本，版本来源写明",
         "读者、原信念、张力有依据；每个分支的转折是读者会改变判断的发现，不成立分支有退路 venue",
         "潜力卡有前瞻档位；venue 候选的 essential 属性并集已写进 VENUE_PROFILE",
@@ -389,6 +390,7 @@ def checks_r1(root: Path, layout: Layout) -> list[Check]:
         text = read_text(framing)
         missing = [h for h in FRAMING_HEADINGS if h not in text]
         out.append(Check(f"{name} 必需小节", not missing, "缺少：" + "、".join(missing) if missing else "一句话主张 / 读者 / 研究问题 / 最强基线 / 不主张 齐全" + layout.note(key)))
+        out.extend(method_checks(text))
         rows = [line for line in text.splitlines() if re.match(r"\|\s*RQ\s*\d", line)]
         complete = [r for r in rows if len([c for c in r.strip().strip("|").split("|") if c.strip()]) >= 5]
         out.append(Check("RQ 表至少一行且主要比较 / 指标 / 判定规则已填", bool(rows) and len(complete) == len(rows), f"{len(complete)}/{len(rows)} 行填写完整"))
@@ -496,7 +498,10 @@ def declared_methods(text: str) -> list[str]:
     match = METHOD_RE.search(text)
     if not match:
         return []
-    names = re.split(r"[、,，;；/ ]+", match.group(1).strip())
+    value = re.sub(r"[（(][^（）()]*[）)]", " ", match.group(1)).strip()
+    if not value or value.startswith("<"):
+        return []
+    names = re.split(r"[、,，;；/ ]+", value)
     return [re.sub(r"\.md$", "", n.strip("`（）() ")) for n in names if n.strip("`（）() ")]
 
 
@@ -515,6 +520,22 @@ def method_manual(text: str) -> list[str]:
     return [METHOD_MANUAL[n] for n in declared_methods(text) if n in METHOD_MANUAL]
 
 
+def framing_consistency(layout: Layout, protocol_text: str) -> list[Check]:
+    """R2 inherits the research type declared in FRAMING at R1; a change is made in FRAMING, not silently in the protocol."""
+    key = "paper/FRAMING.md"
+    framing = layout.path(key)
+    label = "协议研究类型与 FRAMING 一致"
+    if not framing.exists():
+        return [Check(label, False, layout.missing(key))]
+    declared = declared_methods(read_text(framing))
+    if not declared:
+        return [Check(label, False, f"{layout.label(key)} 没有“- 研究类型：”行；回 R1 补上" + layout.note(key))]
+    protocol = declared_methods(protocol_text)
+    if protocol == declared:
+        return [Check(label, True, "一致：" + "、".join(declared))]
+    return [Check(label, False, f"协议 {'、'.join(protocol) or '未声明'}，FRAMING {'、'.join(declared)}；改类型要在协议写理由并修订 FRAMING")]
+
+
 def checks_r2(root: Path, layout: Layout) -> list[Check]:
     key = "experiments/PROTOCOL_<date>.md"
     protocols = layout.files(key)
@@ -524,6 +545,7 @@ def checks_r2(root: Path, layout: Layout) -> list[Check]:
     text = read_text(protocol)
     out = [Check(rel(root, protocol), True, "存在（取名称最新）" + layout.note(key))]
     out.extend(method_checks(text))
+    out.extend(framing_consistency(layout, text))
     out.append(Check("协议含指纹（SHA-256）", bool(SHA_RE.search(text)), "有" if SHA_RE.search(text) else "没有任何 64 位十六进制哈希"))
     out.append(Check("协议含冻结记录", "冻结" in text, "有" if "冻结" in text else "未出现“冻结”"))
     out.append(Check("协议含判定规则的三种结局", all(k in text for k in ("成立", "不成立", "不能判定")), "有" if all(k in text for k in ("成立", "不成立", "不能判定")) else "缺少“成立 / 不成立 / 不能判定”之一"))
@@ -779,8 +801,10 @@ def main(argv: list[str] | None = None) -> int:
     manual = list(MANUAL[stage])
     if stage in (2, 3):
         protocols = layout.files("experiments/PROTOCOL_<date>.md")
-        if protocols:
-            manual.extend(method_manual(read_text(protocols[-1])))
+        framing = layout.path("paper/FRAMING.md")
+        source = protocols[-1] if protocols else (framing if framing.exists() else None)
+        if source is not None:
+            manual.extend(method_manual(read_text(source)))
     failed = [c for c in checks if c.ok is False]
     passed = [c for c in checks if c.ok is True]
     exit_code = 1 if failed else 0

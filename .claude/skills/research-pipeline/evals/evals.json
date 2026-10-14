@@ -143,10 +143,10 @@
       "id": "trigger-r2-qualitative-protocol",
       "kind": "should_trigger",
       "prompt": "我们这篇是访谈研究，要进 R2 写协议了。协议模板里的种子和测试集我们没有，怎么写？",
-      "expected_output": "协议骨架通用，开头声明研究类型 case-study-or-qualitative，按 methods/ 档案填追加字段：受访者选择理由、提纲作为指纹、编码本与编码者、饱和与信度、反例搜索；不写种子和划分；判定规则写主题成立的标准与不能判定的情形。",
+      "expected_output": "协议骨架通用，开头的研究类型继承 FRAMING 的 case-study-or-qualitative（FRAMING 没写就先回 R1 补上），按 methods/ 档案填追加字段：受访者选择理由、提纲作为指纹、编码本与编码者、饱和与信度、反例搜索；不写种子和划分；判定规则写主题成立的标准与不能判定的情形。",
       "expectations": [
         "不把量化实验的字段硬套到访谈研究",
-        "研究类型声明并引用对应档案",
+        "研究类型与 FRAMING 一致并引用对应档案",
         "判定规则仍有三种结局和稳健性要求"
       ]
     },

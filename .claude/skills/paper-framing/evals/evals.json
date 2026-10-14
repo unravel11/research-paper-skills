@@ -16,11 +16,12 @@
       "id": "trigger-before-experiment",
       "kind": "should_trigger",
       "prompt": "准备做一个benchmark，先帮我想清研究问题和实验怎样排除竞争解释。",
-      "expected_output": "从知识差异到可区分解释的实验计划。",
+      "expected_output": "先按 methods/README.md 的适用表选定研究类型（这里是 quantitative-experiment）并写进 FRAMING 开头，再从知识差异到可区分解释的实验计划。",
       "expectations": [
         "核实最近工作差异。",
         "实验对应解释的不同预测。",
-        "不自行收集数据或运行模型。"
+        "不自行收集数据或运行模型。",
+        "先选定研究类型并写进 FRAMING，判定规则与稳健性按该档案写。"
       ]
     },
     {
