@@ -11,7 +11,7 @@
 
 ## R1 主线与故事 → R2
 
-- `paper/FRAMING.md`（模板：`paper-framing/references/framing-template.md`）：研究类型已声明（`- 研究类型：<档案名>`，档案在 [methods/](methods/README.md) 存在）；一句话主张；目标读者；RQ 列表，每个 RQ 有主要比较、指标、判定规则（怎样算成立、不成立、不能判定，稳健性要求按研究类型）和阴性结果可解释的前提；最强基线及其版本来源；明确不主张什么；潜力卡有前瞻档位；产生时点（事前 / 事后）。
+- `paper/FRAMING.md`（模板：`paper-framing/references/framing-template.md`）：研究类型已声明（`- 研究类型：<档案名>`，档案在 [methods/](methods/README.md) 存在）；一句话主张；目标读者；RQ 列表，每个 RQ 有主要比较、指标、判定规则（怎样算成立、不成立、不能判定，稳健性要求按研究类型）、“不跑实验能否推出答案”一列（推算、前提、预测值；能推出的不得作主要比较）和阴性结果可解释的前提；最强基线及其版本来源；明确不主张什么；潜力卡有前瞻档位；产生时点（事前 / 事后）。
 - `paper/STORY_SPINE.md`：读者、原信念、张力有依据；至少两个分支（成立 / 不成立），每个分支的一句话故事 ≤40 字、删除测试为"是"、有适合的 venue 候选。
 - `paper/VENUE_PROFILE.md`：2–3 个候选，每个有读者、贡献类型、essential 与 desirable 属性摘要、版式与流程、核验日期；写明协议必须覆盖的属性并集。
 - 建议：`paper-review` 的 L1 前瞻用法：framing A/B 潜力门至少一个通过，两个分支都有去处；两个 framing 都不通过就不进入 R2，先重构问题。

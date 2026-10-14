@@ -93,6 +93,7 @@ MANUAL = {
     1: [
         "研究类型选对了：对照 references/methods/README.md 的适用表，两种时主次写明",
         "每个 RQ 有且只有一个主要比较；判定规则写了成立、不成立、不能判定与稳健性要求（按研究类型档案），没有“视情况”；阴性可解释的前提已写",
+        "每个主要比较的推算成立：只用已核实的数字加写明的前提，能落进判定规则同一档的不作主要比较；只有下界或跨档的把下界写进了那一列",
         "基线是当前最强版本，版本来源写明",
         "读者、原信念、张力有依据；每个分支的转折是读者会改变判断的发现，不成立分支有退路 venue",
         "潜力卡有前瞻档位；venue 候选的 essential 属性并集已写进 VENUE_PROFILE",
@@ -382,6 +383,40 @@ def checks_r0(root: Path, layout: Layout) -> list[Check]:
     return out
 
 
+def rq_table(text: str) -> tuple[list[str], list[list[str]]]:
+    """Header cells and RQ rows of the FRAMING research-question table."""
+    header: list[str] = []
+    rows: list[list[str]] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [c.strip() for c in stripped.strip("|").split("|")]
+        if cells and cells[0] == "RQ":
+            header = cells
+        elif header and cells and re.match(r"RQ\s*\d", cells[0]):
+            rows.append(cells)
+    return header, rows
+
+
+def derivation_checks(text: str) -> list[Check]:
+    """Every main comparison states whether its answer already follows from verified numbers."""
+    header, rows = rq_table(text)
+    col = next((i for i, h in enumerate(header) if "推出答案" in h), None)
+    if col is None:
+        return [Check("RQ 表有“不跑实验能否推出答案”列", False, "没有这一列；按 framing-template.md 的表头补上并逐行填写")]
+    out: list[Check] = []
+    for cells in rows:
+        rq, value = cells[0], cells[col] if col < len(cells) else ""
+        if not value:
+            out.append(Check(f"{rq} 推算已填", False, "“不跑实验能否推出答案”为空；写推算、前提、预测值，以“推不出：”或“能推出：”开头"))
+        elif value.startswith("能推出"):
+            out.append(Check(f"{rq} 答案不能已由已有数字推出", False, "填了“能推出”：不作主要比较，降为标定或已知发现"))
+        else:
+            out.append(Check(f"{rq} 推算已填", True, value[:40]))
+    return out
+
+
 def checks_r1(root: Path, layout: Layout) -> list[Check]:
     out: list[Check] = []
     key = "paper/FRAMING.md"
@@ -394,6 +429,7 @@ def checks_r1(root: Path, layout: Layout) -> list[Check]:
         rows = [line for line in text.splitlines() if re.match(r"\|\s*RQ\s*\d", line)]
         complete = [r for r in rows if len([c for c in r.strip().strip("|").split("|") if c.strip()]) >= 5]
         out.append(Check("RQ 表至少一行且主要比较 / 指标 / 判定规则已填", bool(rows) and len(complete) == len(rows), f"{len(complete)}/{len(rows)} 行填写完整"))
+        out.extend(derivation_checks(text))
         timing = re.search(r"^-?[ \t]*产生时点[:：][ \t]*(\S.*)$", text, re.M)
         timing_value = timing.group(1).strip() if timing else ""
         ok_timing = bool(re.search(r"事前|事后", timing_value)) and not re.search(r"事前\s*/\s*事后", timing_value)
