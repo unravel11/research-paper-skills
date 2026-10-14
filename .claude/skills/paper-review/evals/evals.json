@@ -116,6 +116,17 @@
         "不用记忆替代官方核验",
         "管理性弃权与科学结论分开"
       ]
+    },
+    {
+      "id": "trigger-l2-qualitative",
+      "kind": "should_trigger",
+      "prompt": "访谈都做完了，编码也编完了，做一次二级评审看能不能进论文。",
+      "expected_output": "L2：从协议读研究类型 case-study-or-qualitative，按 l2-by-method.md 该节审十门：提纲与编码本是否在访谈前冻结、受访者选择与脱落、编码者信度与分歧、研究者立场、反例分析、饱和证据、引语计数单位；输出处置表；记录里 target.research_type 填档案名。",
+      "expectations": [
+        "不用划分、训练、种子这类量化问法",
+        "十门编号与状态值不变",
+        "研究类型未声明时按通用问法并标注"
+      ]
     }
   ]
 }

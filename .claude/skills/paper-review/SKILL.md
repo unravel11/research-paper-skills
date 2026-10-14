@@ -1,6 +1,6 @@
 ---
 name: paper-review
-description: 分级评审任何目标 venue 的论文、实验结果或研究计划（L1 主线与潜力门 / L2 实验链审计 / L3 投稿前模拟审稿）。先从用户指定或 paper/VENUE_PROFILE.md 读出 venue，加载对应的 venue 档案（按模板为每个 venue 新建一份），没有档案就用通用量表加官方来源协议。用于用户要求一级/二级/三级评审、判断 framing（兼容口语 farming）是否被证据支撑、决定要不要补实验、做投稿 Go/No-Go、模拟审稿、或在 R1 实验之前做前瞻潜力评估时；未指定层级默认 L1。英文触发短语：review this paper for a given venue, graded review, L1 L2 L3 review, framing review, is the framing supported by the evidence, should we run more experiments, go or no-go, simulate the reviewers, pre-submission check, venue fit, potential tier. 只读：不改稿、不跑实验、不预测录用概率。不用于只查 venue 事实（分区、费用、周期）、不用于经济学期刊的审稿量表、不用于改写稿件。
+description: 分级评审任何目标 venue 的论文、实验结果或研究计划（L1 主线与潜力门 / L2 证据链审计 / L3 投稿前模拟审稿）。先从用户指定或 paper/VENUE_PROFILE.md 读出 venue，加载对应的 venue 档案（按模板为每个 venue 新建一份），没有档案就用通用量表加官方来源协议。用于用户要求一级/二级/三级评审、判断 framing（兼容口语 farming）是否被证据支撑、决定要不要补实验、做投稿 Go/No-Go、模拟审稿、或在 R1 实验之前做前瞻潜力评估时；未指定层级默认 L1。英文触发短语：review this paper for a given venue, graded review, L1 L2 L3 review, framing review, is the framing supported by the evidence, should we run more experiments, go or no-go, simulate the reviewers, pre-submission check, venue fit, potential tier. 只读：不改稿、不跑实验、不预测录用概率。不用于只查 venue 事实（分区、费用、周期）、不用于经济学期刊的审稿量表、不用于改写稿件。
 ---
 
 # 分级评审：venue 无关的核心加 venue 档案
@@ -29,7 +29,7 @@ description: 分级评审任何目标 venue 的论文、实验结果或研究计
 | 层级 | 默认用途 | 必须回答的问题 |
 |---|---|---|
 | 一级 L1 | 默认；高频进展评审；R1 实验之前的前瞻用法 | 现有证据，或前瞻时的潜力卡与骨架分支，是否支撑 framing？有没有更保守但更站得住的 framing？该停止、补分析、补实验还是重构？ |
-| 二级 L2 | 实验冻结、改稿前或发现污染时 | 数据、标签、划分、训练、候选、统计、基线和复现链是否科学成立？哪些结果可以进论文？ |
+| 二级 L2 | 协议冻结后、改稿前或发现污染时 | 从对象到结论的证据链站不站得住：对象与分母、真值与度量、隔离、分析单位、过程受控、对照、判定与不确定性、稳健性、复现链？按研究类型的问法审。哪些结果可以进论文？ |
 | 三级 L3 | 完整稿形成后 | 以目标 venue 审稿人的视角评估新颖性、方法、实验、写作、可复现性、venue 契合度、版面与图表，给出 Go / No-Go。 |
 
 可组合，如 `L1+L2`。未指定只做 L1。稿件不完整时 L3 降级为 L1 或 L2，或返回 `ABSTAIN_INCOMPLETE_MANUSCRIPT`，不假装做了 L3。
@@ -45,6 +45,7 @@ description: 分级评审任何目标 venue 的论文、实验结果或研究计
 ## 加载参考资料
 
 - 每次评审完整读 [references/review-rubric.md](references/review-rubric.md)，再读选定的 venue 档案。
+- 做 L2 时读 [references/l2-by-method.md](references/l2-by-method.md)：先从 `experiments/PROTOCOL_*.md` 第一行读研究类型（没有就看 FRAMING 或问用户），按对应小节的问法审十门；类型名以 `research-pipeline/references/methods/` 的档案名为准。
 - 生成报告时读 [references/report-template.md](references/report-template.md)。
 - L3，或任何涉及当前 scope、投稿规则、格式要求的判断，读 [references/official-source-protocol.md](references/official-source-protocol.md)，只用官方页面并标核验日期。
 
@@ -54,7 +55,7 @@ description: 分级评审任何目标 venue 的论文、实验结果或研究计
 2. **建立证据账本。** 每项材料标为 `VERIFIED_CURRENT` / `CONTROLLED_OR_RETROSPECTIVE` / `EXPLORATORY_OR_CANDIDATE` / `SUPERSEDED_OR_INVALID` / `MISSING_OR_UNRESOLVED`，与 research-pipeline 台账和 orchestrator 合同同名。每个主张记录证据路径、适用数据与指标、验证状态和 claim ceiling。类别之间不靠措辞升级。
 3. **framing A/B 潜力门。** A 是当前采用的核心定位，B 是同一证据能支撑的最强保守替代，不凭空加贡献。比较研究问题清晰度、证据覆盖、venue 价值、可区分贡献、残余风险、需新增的工作。没有真实的 B 写 `NO_CREDIBLE_ALTERNATIVE`。至少一个 framing 过最低潜力门才建议投入新的正式实验；两个都不过，优先重构问题，不通过大规模实验找正结果。
 4. **主张与证据映射。** 逐项检查问题、方法或干预、数据与比较、结果、结论。结果不能唯一支撑的表述降级或标缺口。必须区分：检索覆盖与候选内决策质量；相关性与因果；同池比较与端到端比较；development 或 retrospective 与 untouched confirmation；controlled implementation 与 faithful reproduction；标识符锚定的参照标签与人工语义 gold；局部结论与跨系统、跨时间泛化。
-5. **逐门判定。** 核心门按量表，venue 附加门按档案；每门只用 `PASS` / `PARTIAL` / `FAIL` / `ABSTAIN`，不给总分，不把 `ABSTAIN` 当 `PASS`。
+5. **逐门判定。** 核心门按量表，L2 的十门按研究类型的问法，venue 附加门按档案；每门只用 `PASS` / `PARTIAL` / `FAIL` / `ABSTAIN`，不给总分，不把 `ABSTAIN` 当 `PASS`。
 6. **补实验决策。** 只选一个：`NO_MORE_CORE_EXPERIMENTS` / `ANALYSIS_ONLY` / `TARGETED_EXPERIMENTS` / `MAJOR_REDESIGN` / `ABSTAIN_MISSING_INPUTS`。每个建议的实验用量表里的实验卡片，写清它填补的主张缺口、最小设计、独立验证、各种结果下论文怎么变、停止规则、无论结果如何都不能声称什么。不写"多加数据、基线、消融"。
 7. **L3 专项。** 渲染 PDF 看版面与图表：图一是否在前两页并能单独讲出转折，表格与字号是否可读，是否被压缩，`paper-storytelling` 的症状清单是否全否。按官方来源协议核验当前 scope 与投稿规则，访问失败只对管理字段 `ABSTAIN_NOT_VERIFIED`，不影响科学结论。列前三条拒稿风险并给一个允许的推荐。
 8. **重复评审。** 有上次评审时先验证其快照是否仍适用，再报告新增证据、被替换结果、门禁变化、framing 变化和补实验决策变化。没有可比快照写 `NO_VERIFIED_PRIOR_SNAPSHOT`。

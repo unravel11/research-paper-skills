@@ -128,7 +128,8 @@ L1、L2 省略本节。
     "venue": "<缩写>",
     "name": "<venue 全称>",
     "profile": "references/venues/<缩写>.md",
-    "official_source_prefixes": ["https://<官方站点前缀>/"]
+    "official_source_prefixes": ["https://<官方站点前缀>/"],
+    "research_type": "<research-pipeline methods/ 档案名；L2 必填，其他层级可省>"
   },
   "snapshot": {
     "repository_or_source": "paper/main.tex",

@@ -119,6 +119,10 @@ def validate(record: Any) -> list[str]:
             errors.append("target.name must be the venue's full name")
         if not nonempty_string(target.get("profile")):
             errors.append("target.profile must name the venue profile file or 'generic'")
+        if "research_type" in target and not nonempty_string(target.get("research_type")):
+            errors.append("target.research_type, when present, must name a research-pipeline methods/ profile")
+        if record.get("review_level") in {"L2", "L1+L2"} and not nonempty_string(target.get("research_type")):
+            errors.append("target.research_type is required for an L2 review (profile name from research-pipeline/references/methods/)")
         raw_prefixes = target.get("official_source_prefixes")
         if not isinstance(raw_prefixes, list) or not all(nonempty_string(p) for p in raw_prefixes):
             errors.append("target.official_source_prefixes must be a list of official URL prefixes (may be empty only for NOT_REQUESTED)")
