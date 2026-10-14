@@ -1,0 +1,7 @@
+interface:
+  display_name: "Repository Paper Style Profiler"
+  short_description: "Find model papers and save a reusable style contract"
+  default_prompt: "Use $paper-style-profiler to find the best style-anchor papers in this repository, extract their shared language style, and save a reusable writing contract."
+
+policy:
+  allow_implicit_invocation: true

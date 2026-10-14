@@ -1,0 +1,4 @@
+interface:
+  display_name: "论文叙事：故事骨架与打动读者"
+  short_description: "在证据边界内产出故事骨架，并用它约束标题、摘要、引言、图一、RQ 回答与结论"
+  default_prompt: "使用 $paper-storytelling，基于 paper/FRAMING 与台账写出故事骨架（读者、原信念、张力、转折、收获、一句话故事），然后给出标题/摘要/引言/图一/RQ 回答框的落实决定，不改结果、不写整篇正文。"

@@ -1,0 +1,121 @@
+{
+  "skill_name": "paper-review",
+  "evals": [
+    {
+      "id": "trigger-l1-default",
+      "kind": "should_trigger",
+      "prompt": "再看看我们这篇投 TSE 的论文现在还差什么，值不值得继续补实验。",
+      "expected_output": "默认 L1：按 VENUE_PROFILE 或用户指定的 venue 找档案（有 tse.md 就加载，没有就用通用量表并建议建档），冻结快照，framing A/B 潜力门，全部 L1 核心门加档案里的附加门，给潜力档位（已有证据）和唯一的补实验决策与停止点；不改稿。",
+      "expectations": [
+        "未指定层级默认 L1",
+        "按 venue 缩写去 references/venues/ 找档案，没有就用通用量表",
+        "先给大白话结论再给证据",
+        "不继承旧快照结论"
+      ]
+    },
+    {
+      "id": "trigger-l1-security-framing",
+      "kind": "should_trigger",
+      "prompt": "用 paper-review 给当前稿做一级评审，目标是一本安全应用类期刊，重点判断 vulnerability framing 还是 measurement framing 更站得住。",
+      "expected_output": "L1，加载该 venue 的档案（没有就用通用量表并另读 orchestrator 的 security-venue-review.md），比较忠实的 Framing A 与保守的 Framing B，核心门加档案里的附加门，给档位与补实验决策。",
+      "expectations": [
+        "不把别的 venue 的档案套过来",
+        "威胁模型与保护对象作为附加门或 security-venue-review 的核对项",
+        "不预测录用概率"
+      ]
+    },
+    {
+      "id": "trigger-prospective-l1",
+      "kind": "should_trigger",
+      "prompt": "实验还没跑，FRAMING 和两个分支的骨架写好了，venue 候选是 TSE 和 EMSE。帮我评一下这条主线值不值得投入正式实验。",
+      "expected_output": "L1 前瞻用法：材料是潜力卡、骨架分支与 VENUE_PROFILE；检查判定规则与结果中性检查是否写定、基线是否最强、两个分支是否都有去处；档位标前瞻；决策只在 TARGETED_EXPERIMENTS（进 R2）或 MAJOR_REDESIGN（回 paper-framing）之间。",
+      "expectations": [
+        "档位带前瞻标注",
+        "两个分支都要有去处",
+        "不要求已有结果"
+      ]
+    },
+    {
+      "id": "trigger-l3-with-pdf",
+      "kind": "should_trigger",
+      "prompt": "整篇论文和补充材料都齐了，做三级投稿前模拟审稿，目标 TSE，顺便核对当前官方投稿要求。",
+      "expected_output": "L3：绑定完整快照，渲染 PDF 检查版面与图表（L3-G6），按官方来源协议核验 TSE 当前规则并记 URL 与日期，列前三条拒稿风险，给允许的推荐之一。",
+      "expectations": [
+        "渲染 PDF 而不只读源码",
+        "科学推荐与管理性弃权分开",
+        "不给接收百分比"
+      ]
+    },
+    {
+      "id": "trigger-unknown-venue",
+      "kind": "should_trigger",
+      "prompt": "这篇准备投 TOSEM，做一级评审。",
+      "expected_output": "没有 TOSEM 档案：用通用量表加官方来源协议评审，报告里标 venue 未建档，建议按 venues/README.md 新建档案；不套别的 venue 的档案。",
+      "expectations": [
+        "不把别的 venue 档案套到 TOSEM",
+        "提示可建档",
+        "核心门照常"
+      ]
+    },
+    {
+      "id": "no-trigger-venue-facts",
+      "kind": "should_not_trigger",
+      "prompt": "查一下 TSE 今年是 JCR 几区、中科院几区、是否收 APC、平均审稿多久。",
+      "expected_output": "只查 venue 事实，按官方来源协议标提供方、年份、途径与核验日期，不启动评审流程。",
+      "expectations": [
+        "不做全套评审",
+        "区分 JCR 分区与中科院分区",
+        "费用与周期标为时变事实"
+      ]
+    },
+    {
+      "id": "no-trigger-rewrite",
+      "kind": "should_not_trigger",
+      "prompt": "按审稿意见把 Related Work 重写一遍。",
+      "expected_output": "改稿是 orchestrator 的定点修订或 academic-humanizer 的事；评审 skill 只读。",
+      "expectations": [
+        "不改稿"
+      ]
+    },
+    {
+      "id": "no-trigger-economics-rubric",
+      "kind": "should_not_trigger",
+      "prompt": "用经济学期刊的 referee report 格式评这篇计量论文。",
+      "expected_output": "不属于本 skill 的 venue 范围，不套用软件工程或安全 venue 的量表。",
+      "expectations": [
+        "不用本 skill 的核心门冒充经济学审稿"
+      ]
+    },
+    {
+      "id": "boundary-acceptance-probability",
+      "kind": "boundary",
+      "prompt": "按 TSE 标准评一下，顺便给我一个具体接收概率。",
+      "expected_output": "做评审但拒绝给概率，用档位、就绪度与拒稿风险代替。",
+      "expectations": [
+        "没有百分比或接收预测",
+        "venue 适配与科学有效性分开"
+      ]
+    },
+    {
+      "id": "boundary-incomplete-l3",
+      "kind": "boundary",
+      "prompt": "只有摘要、方法提纲和两张初步表格，直接做三级终审。",
+      "expected_output": "拒绝假装 L3：降级为 L1 或 L2，或返回 ABSTAIN_INCOMPLETE_MANUSCRIPT 并列出缺失的 load-bearing 输入。",
+      "expectations": [
+        "不假装稿件完整",
+        "初步证据保持 exploratory",
+        "给最小下一步"
+      ]
+    },
+    {
+      "id": "boundary-official-page-blocked",
+      "kind": "boundary",
+      "prompt": "做三级评审；如果官方 Guide for Authors 打不开，就按你记得的规则判断格式已经合规。",
+      "expected_output": "科学部分照常评；当前规则字段标 ABSTAIN_NOT_VERIFIED 并记录尝试的官方 URL 与日期；不用记忆冒充当前规则。",
+      "expectations": [
+        "不用记忆替代官方核验",
+        "管理性弃权与科学结论分开"
+      ]
+    }
+  ]
+}

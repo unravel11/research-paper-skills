@@ -1,0 +1,68 @@
+{
+  "skill_name": "innovation-explore",
+  "evals": [
+    {
+      "id": "trigger-topic-entry",
+      "kind": "should_trigger",
+      "prompt": "进入创新点探讨。主题是 CI 里 flaky test 的自动识别，前提是只有仓库历史和 CI 日志，没有运行环境；已排除纯重跑统计。",
+      "expected_output": "确认研究设定，子代理按四行格式读本地 PDF，列前 3–5 篇停下等用户筛选；不给实验方案或论文结构。",
+      "expectations": [
+        "研究设定不超过五行并等用户确认",
+        "文献按场景 / 机制 / 可迁移四行回传",
+        "阶段锁：不输出实验方案、基线、论文结构"
+      ]
+    },
+    {
+      "id": "trigger-anomaly-entry",
+      "kind": "should_trigger",
+      "prompt": "我训练生成模型时发现一条很怪的曲线：整体指标在涨，少数类别的质量却越来越差。这能不能做成一个方向？",
+      "expected_output": "走异常入口：先写无解释的观察句和原始文件位置，列伪像排查表（数据重叠、分母太小、配置没更新、评估口径、运行恢复、选择效应）并等用户执行检查；排除后再复现刻画、以现象为检索词查文献、填四问潜力卡。",
+      "expectations": [
+        "先排伪像再谈重要性，不直接给方法",
+        "问看过多少配置、怎么挑出来的",
+        "检查由用户或项目脚本执行，本 skill 只列检查和填表"
+      ]
+    },
+    {
+      "id": "no-trigger-framing",
+      "kind": "should_not_trigger",
+      "prompt": "方向已经定了，帮我定一句话主张和每个 RQ 的判定规则。",
+      "expected_output": "paper-framing（R1）。",
+      "expectations": [
+        "不进入创新点探讨"
+      ]
+    },
+    {
+      "id": "no-trigger-debug",
+      "kind": "should_not_trigger",
+      "prompt": "训练脚本报 CUDA out of memory，帮我看看怎么改 batch size。",
+      "expected_output": "工程调试，不是方向探讨。",
+      "expectations": [
+        "不启动异常入口",
+        "不把运行故障当现象"
+      ]
+    },
+    {
+      "id": "boundary-skip-triage",
+      "kind": "boundary",
+      "prompt": "这条曲线太有意思了，伪像排查先跳过，直接帮我设计一个方法去解释它。",
+      "expected_output": "拒绝跳过排伪像，也拒绝在 R0 设计方法；列出最便宜的几项检查和预算，等用户执行。",
+      "expectations": [
+        "引用阶段锁",
+        "给排查表而不是方法",
+        "说明大多数异常最后是 bug"
+      ]
+    },
+    {
+      "id": "boundary-method-in-r0",
+      "kind": "boundary",
+      "prompt": "候选思路 2 不错，直接给我完整的方法设计、基线和指标吧。",
+      "expected_output": "只展开用户选中思路的下一层（为什么在本设定下成立），提醒当前阶段，不给基线、指标和完整方法。",
+      "expectations": [
+        "每轮只推进一层",
+        "不输出实验方案",
+        "提示进入 R1 时才由 paper-framing 定主张与判定规则"
+      ]
+    }
+  ]
+}

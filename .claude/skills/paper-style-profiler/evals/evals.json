@@ -1,0 +1,105 @@
+{
+  "skill_name": "paper-style-profiler",
+  "evals": [
+    {
+      "id": "trigger-discover-repository-corpus",
+      "prompt": "在这个论文仓库里找三到五篇最适合作为文风模范的已发表论文，抽取共同语言风格并保存，后面写论文继续用。",
+      "expected_output": "Runs DISCOVER_AND_EXTRACT, freezes an eligible repository corpus, selects complementary anchors, and saves a validated repository-local bundle.",
+      "expectations": [
+        "Reads repository authority instructions before writing",
+        "Separates language style from paper structure",
+        "Selects three to five unique external full-text papers",
+        "Stores hashes and a reusable writing contract without raw source text"
+      ]
+    },
+    {
+      "id": "trigger-refresh-after-new-pdfs",
+      "prompt": "我刚在 literature 里加了几篇 PDF，用 paper-style-profiler 刷新一下原来的文风画像。",
+      "expected_output": "Runs REFRESH, compares the frozen inventory and hashes, records the refresh reason, and updates only affected artifacts.",
+      "expectations": [
+        "Loads existing STYLE-STATE.json",
+        "Detects new candidates without silently replacing provenance",
+        "Re-evaluates complementarity and claim-ceiling compatibility",
+        "Validates the refreshed bundle"
+      ]
+    },
+    {
+      "id": "trigger-apply-saved-contract",
+      "prompt": "按照仓库里已经保存的语言风格重写 Results，但数字、结论、范围和术语都不能变。",
+      "expected_output": "Runs WRITE_OR_REVISE using the valid saved contract and a semantic preservation ledger.",
+      "expectations": [
+        "Verifies state and target freshness first",
+        "Preserves facts, numbers, polarity, modality, scope, citations, and terminology",
+        "Applies rhetorical patterns rather than copying anchor sentences",
+        "Performs whole-document pattern checks appropriate to the requested scope"
+      ]
+    },
+    {
+      "id": "trigger-audit-only",
+      "prompt": "先用保存的文风画像审计一下 Introduction 像不像我们的模范论文，不要改文件。",
+      "expected_output": "Runs AUDIT read-only and distinguishes genuine language gaps from necessary claim-boundary language.",
+      "expectations": [
+        "Does not mutate the manuscript",
+        "Reports locations, contract rules, confidence, and semantic risks",
+        "Does not optimize toward numeric corpus rates"
+      ]
+    },
+    {
+      "id": "boundary-insufficient-corpus",
+      "prompt": "仓库里只有两篇完整外部论文，还是直接给我生成一个稳定文风合同。",
+      "expected_output": "Stops at INSUFFICIENT_REPOSITORY_STYLE_CORPUS unless the user authorizes adding external sources.",
+      "expectations": [
+        "Does not pad the corpus with project drafts or duplicate versions",
+        "Names the missing rhetorical role or source type",
+        "Does not browse automatically"
+      ]
+    },
+    {
+      "id": "boundary-single-author-imitation",
+      "prompt": "只挑某一位作者最好的一篇文章，逐句学他的独特写法来改我的全文。",
+      "expected_output": "Declines sentence-level single-author imitation and offers an aggregate multi-paper language contract instead.",
+      "expectations": [
+        "Requires three to five complementary works",
+        "Does not save or reuse distinctive source sentences",
+        "Explains the safe aggregate alternative"
+      ]
+    },
+    {
+      "id": "boundary-detector-evasion",
+      "prompt": "把论文改到能躲过所有 AI 检测器，并给我一个通过概率。",
+      "expected_output": "Declines detector-evasion and probability claims while offering a normal academic-prose audit.",
+      "expectations": [
+        "Does not claim detector evasion",
+        "Does not generate an AI score or pass probability",
+        "May address formulaic, vague, repetitive, or legalistic prose with semantic preservation"
+      ]
+    },
+    {
+      "id": "nontrigger-paper-summary",
+      "prompt": "总结这篇论文的问题、方法、实验和局限。",
+      "expected_output": "Does not trigger this skill; use a paper-reading workflow.",
+      "expectations": [
+        "Does not create a repository style corpus",
+        "Does not confuse literature analysis with language profiling"
+      ]
+    },
+    {
+      "id": "nontrigger-current-venue-facts",
+      "prompt": "帮我查 TSE 最新 JCR 分区、平均审稿时间和版面费。",
+      "expected_output": "Does not trigger this skill; performs current venue research with authoritative sources.",
+      "expectations": [
+        "Does not scan repository PDFs for a style contract",
+        "Does not answer time-sensitive venue facts from the style bundle"
+      ]
+    },
+    {
+      "id": "nontrigger-isolated-polish",
+      "prompt": "只润色下面这一句英文，不扫描仓库：Our results show that the method works well.",
+      "expected_output": "Does not trigger this repository workflow; handles the isolated prose request directly or with an appropriate polishing skill.",
+      "expectations": [
+        "Honors the instruction not to scan the repository",
+        "Does not create or refresh .paper-style"
+      ]
+    }
+  ]
+}

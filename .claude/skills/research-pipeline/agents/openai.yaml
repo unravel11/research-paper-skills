@@ -1,0 +1,4 @@
+interface:
+  display_name: "论文总流程：方向→主线→协议→实验→写作→投稿"
+  short_description: "判定当前研究阶段（含事后入口）、核对门槛、路由到对应阶段 skill，并维护 research/STATE.md 与 PROGRESS.md"
+  default_prompt: "使用 $research-pipeline，读取 research/STATE.md、PROGRESS.md 与各阶段产出，运行 scripts/check_gates.py 做文件级核对，判定当前阶段、列出已过/未过门槛与待用户决定项，并给出下一步应调用的 skill；不运行实验、不写正文。"

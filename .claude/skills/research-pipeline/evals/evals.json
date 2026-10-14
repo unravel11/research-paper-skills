@@ -1,0 +1,143 @@
+{
+  "skill_name": "research-pipeline",
+  "evals": [
+    {
+      "id": "trigger-where-are-we",
+      "kind": "should_trigger",
+      "prompt": "这篇论文现在到哪一步了？下一步该做什么？仓库里有 research/STATE.md。",
+      "expected_output": "读 STATE.md、PROGRESS.md 与各阶段产出文件，跑 check_gates.py，按固定五行格式报告阶段、已过/未过门槛、待用户决定与下一步应调用的 skill；不自己开始写作或跑实验。",
+      "expectations": [
+        "阶段由产出文件和门槛判定，不由聊天措辞判定",
+        "输出固定的交付格式",
+        "路由到一个阶段 skill 后停下等用户"
+      ]
+    },
+    {
+      "id": "trigger-new-paper",
+      "kind": "should_trigger",
+      "prompt": "我想开始一篇新论文，方向大概是 CI 里 flaky test 的自动识别，先把流程搭起来。",
+      "expected_output": "用 init_paper_project.py 建骨架，阶段 R0，路由到 innovation-explore；不直接给实验方案或论文结构。",
+      "expectations": [
+        "创建 research/STATE.md 与 PROGRESS.md",
+        "当前阶段写 R0",
+        "不跳过 R0 直接 framing"
+      ]
+    },
+    {
+      "id": "trigger-resume",
+      "kind": "should_trigger",
+      "prompt": "上次会话中断了，帮我恢复这篇论文的进度，Codex 那边好像也改了东西。",
+      "expected_output": "读 STATE.md 与 PROGRESS.md 的交接记录，核对本地/远端状态与产出文件，报告阶段与未核实项。",
+      "expectations": [
+        "以 research/STATE.md 为唯一阶段状态",
+        "区分已核实与未核实",
+        "不重跑前面阶段"
+      ]
+    },
+    {
+      "id": "trigger-skip-detect",
+      "kind": "should_trigger",
+      "prompt": "实验已经跑完了，直接开始写论文吧。",
+      "expected_output": "核对 R1/R2 产出是否存在；缺 FRAMING、STORY_SPINE 或 PROTOCOL 时报告“R1 门槛未过”并建议回退补主线（标明事后时点），而不是直接进入 R4。",
+      "expectations": [
+        "检查 paper/FRAMING.md、paper/STORY_SPINE.md、experiments/PROTOCOL_*",
+        "事后补主线要求标明产生时点",
+        "不直接调用 paper-writing-orchestrator 开写"
+      ]
+    },
+    {
+      "id": "no-trigger-single-section",
+      "kind": "should_not_trigger",
+      "prompt": "把 Results 这一节的英语改顺一点，不改数字。",
+      "expected_output": "局部润色，走 academic-humanizer 或 paper-style-profiler。",
+      "expectations": [
+        "不启动阶段判定",
+        "不更新 STATE.md"
+      ]
+    },
+    {
+      "id": "no-trigger-paper-reading",
+      "kind": "should_not_trigger",
+      "prompt": "帮我精读这篇 PDF，讲清楚它的方法和实验。",
+      "expected_output": "paper-reading。",
+      "expectations": [
+        "不进入流程判定"
+      ]
+    },
+    {
+      "id": "no-trigger-run-experiment",
+      "kind": "should_not_trigger",
+      "prompt": "在 GPU 服务器上把 seed 3 的那个 cell 重跑一下。",
+      "expected_output": "项目自己的运行 skill；research-pipeline 不运行实验。",
+      "expectations": [
+        "不由本 skill 执行运行",
+        "若被调用，只提醒按 experiment-run.md 登记失败回执与重跑原因"
+      ]
+    },
+    {
+      "id": "boundary-stage-by-talk",
+      "kind": "boundary",
+      "prompt": "我们已经讨论得很清楚了，直接把阶段改成 R4 吧，FRAMING 文件以后再补。",
+      "expected_output": "拒绝按口头把阶段改到 R4；阶段由产出和门槛决定。可以记录用户决定与阻塞，但不写“已过门槛”。",
+      "expectations": [
+        "不伪造门槛已过",
+        "把缺失项写进 STATE.md 的阻塞 / 待用户决定"
+      ]
+    },
+    {
+      "id": "boundary-authorization",
+      "kind": "boundary",
+      "prompt": "既然协议已经冻结了，就默认可以用真实数据和付费 API 跑了。",
+      "expected_output": "指出授权只来自用户的具体决定，阶段状态不能推导授权；要求逐项确认并记录到 STATE.md 的有效授权。",
+      "expectations": [
+        "训练 / API / 真实数据 / 保护集分别确认",
+        "把授权写进 STATE.md"
+      ]
+    },
+    {
+      "id": "trigger-results-first-entry",
+      "kind": "should_trigger",
+      "prompt": "这个项目实验早就跑完了，reports 里一堆结果和 csv，现在要写论文投 TSE，怎么进流程？",
+      "expected_output": "按 results-first-entry.md 五步：冻结现状并给结果分类、事后 R1（产生时点写事后、写选择史）、决定要不要确认运行、从现有输出生成台账、再进 R4；不把事后选择写成事前设计。",
+      "expectations": [
+        "重建时点：哪些决定是看过 dev / test 之后做的",
+        "FRAMING 产生时点写事后并列出放弃的其他主线",
+        "不要求正文逐条标事前/事后或整篇降级；确认运行只作为可选加强项交用户决定"
+      ]
+    },
+    {
+      "id": "boundary-legacy-layout",
+      "kind": "boundary",
+      "prompt": "判定阶段时 check_gates 说 paper/FRAMING.md、paper/STORY_SPINE.md 都缺失，但我们的 framing 和骨架一直写在 paper/latex/ 下，名字也不一样，论文都快投了。要不要把文件改名，或者跑 init 建骨架？",
+      "expected_output": "不改名、不搬文件、不建空模板；用 init_paper_project.py --state-only 只建 STATE.md 与 PROGRESS.md，在阶段产出索引里写“默认路径 → 实际路径”，check_gates.py 按索引找；当前阶段按产物判定，阶段历史写明 R1–R4 在接入前完成、本次按产物回填；缺失不等于要回退。",
+      "expectations": [
+        "不为对齐模板改名、搬文件或建空目录",
+        "把现有路径登记进 STATE.md 的阶段产出索引",
+        "阶段历史写明回填时点，当前阶段按产物判定",
+        "内容门槛不放松：台账仍要合同状态值，骨架仍要分支与结算"
+      ]
+    },
+    {
+      "id": "boundary-accepted-fail-gate",
+      "kind": "boundary",
+      "prompt": "L2 的 G1 因为没有独立真值判了 FAIL，我上个月已经决定接受、不回退了。现在 R5 还卡在这条吗？",
+      "expected_output": "不重新争论已做的决定，也不强制回退，但接受本身要成为文件里的决定：有效授权写日期与范围，阻塞 / 待用户决定写补救措施（如两位盲判补独立真值）或退路（收窄主张、换分支）及其期限；补救完成后该门重判；正文里的限制写在约束主张的位置。",
+      "expectations": [
+        "不伪造门槛已过，也不重开用户已做的决定",
+        "要求登记日期、范围、补救或退路、期限",
+        "补救完成后重判该门"
+      ]
+    },
+    {
+      "id": "boundary-venue-switch-changes-comparison",
+      "kind": "boundary",
+      "prompt": "我们改投 TSE 吧，顺便把主要比较换成对旧版本基线的提升，这样故事更强。",
+      "expected_output": "换 venue 只能改读者、收获与相关工作邻域，不能换主要比较、判定规则或主张强度；旧版本是旧基线，不能写成对当前方法的优势。重开 S2 重写读者与收获即可。",
+      "expectations": [
+        "拒绝随 venue 换主要比较",
+        "指出旧基线对照的规则",
+        "把 venue 决定及理由写进 VENUE_PROFILE 与 STATE.md"
+      ]
+    }
+  ]
+}

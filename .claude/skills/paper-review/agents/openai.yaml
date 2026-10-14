@@ -1,0 +1,4 @@
+interface:
+  display_name: "论文分级评审（按 venue 档案）"
+  short_description: "L1 主线与潜力门、L2 实验链审计、L3 投稿前模拟审稿；按 VENUE_PROFILE 加载对应的 venue 档案"
+  default_prompt: "使用 $paper-review 做一级评审：从 paper/VENUE_PROFILE.md 或我指定的 venue 加载档案，判断当前证据（或实验前的潜力卡与骨架分支）是否支撑 framing，比较保守替代 framing，给潜力档位和补实验决策；只读，不改稿。"

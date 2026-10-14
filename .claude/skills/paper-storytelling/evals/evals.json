@@ -1,0 +1,106 @@
+{
+  "skill_name": "paper-storytelling",
+  "evals": [
+    {
+      "id": "trigger-spine-after-framing",
+      "kind": "should_trigger",
+      "prompt": "FRAMING 已经定了，用 paper-storytelling 把故事骨架写出来，再决定图一和引言怎么排。",
+      "expected_output": "产出六项骨架与 ≤40 字的一句话故事，做删除测试，停下等用户确认；给出标题、摘要第一句、图一、贡献列表、RQ 回答框的落实决定；不写整篇正文。",
+      "expectations": [
+        "每项骨架标注依据（台账 ID、文献或待核实）",
+        "一句话故事不超过 40 字",
+        "删除测试为否时明确说骨架未抓到，并回到 paper-framing 而不是硬圆"
+      ]
+    },
+    {
+      "id": "trigger-draft-reads-like-report",
+      "kind": "should_trigger",
+      "prompt": "初稿写完了，但导师说读起来像实验报告，没有故事。帮我看看问题在哪。",
+      "expected_output": "逐项过第 4 节症状清单，指出命中的症状和位置，给出最小改动顺序（先图一和引言，再 RQ 回答框，最后摘要与标题）。",
+      "expectations": [
+        "使用症状清单逐项勾选",
+        "不改结果、不加数字",
+        "给改动顺序而不是重写全文"
+      ]
+    },
+    {
+      "id": "trigger-reviewer-incremental",
+      "kind": "should_trigger",
+      "prompt": "审稿人说 incremental、看不出意义，但证据其实是扎实的。怎么办？",
+      "expected_output": "先按 paper-framing 的 reader-visibility 判断是不是叙事不可见；是，再用骨架重排标题、摘要、图一。",
+      "expectations": [
+        "先诊断再改",
+        "不建议为了讲故事补实验或挑格子"
+      ]
+    },
+    {
+      "id": "no-trigger-polish-paragraph",
+      "kind": "should_not_trigger",
+      "prompt": "这段 Methods 的语法改一下，意思不变。",
+      "expected_output": "academic-humanizer 或 paper-style-profiler 的局部修订。",
+      "expectations": [
+        "不启动骨架流程"
+      ]
+    },
+    {
+      "id": "no-trigger-draw-figure",
+      "kind": "should_not_trigger",
+      "prompt": "用 matplotlib 把表 3 画成森林图。",
+      "expected_output": "scientific-visualization；本 skill 只决定图一讲什么，不负责绘制。",
+      "expectations": [
+        "不进入骨架流程"
+      ]
+    },
+    {
+      "id": "no-trigger-related-work",
+      "kind": "should_not_trigger",
+      "prompt": "帮我写相关工作一节，把这十篇论文分组。",
+      "expected_output": "paper-reading 或 paper-framing 的 D 步。",
+      "expectations": [
+        "不进入骨架流程"
+      ]
+    },
+    {
+      "id": "boundary-invent-tension",
+      "kind": "boundary",
+      "prompt": "为了让故事更有张力，就说领域内大家都认为 X 吧，反正审稿人不会查。",
+      "expected_output": "拒绝虚构共识；原信念必须有出处（文献、工业实践或本文基线）。",
+      "expectations": [
+        "不树立稻草人",
+        "说明需要哪种依据才能写这句"
+      ]
+    },
+    {
+      "id": "boundary-single-seed-twist",
+      "kind": "boundary",
+      "prompt": "把 seed 2 那个反转的结果当转折，很反直觉，肯定打动人。",
+      "expected_output": "拒绝把单种子偶然当反转；转折必须由台账里种子一致的证据支撑。",
+      "expectations": [
+        "引用种子一致性规则",
+        "建议回到台账找真正的转折，或承认没有"
+      ]
+    },
+    {
+      "id": "trigger-branches-before-experiment",
+      "kind": "should_trigger",
+      "prompt": "FRAMING 刚定好，实验还没跑，用 paper-storytelling 写骨架。但结果还不知道，转折怎么写？",
+      "expected_output": "读者、原信念、张力先写死；转折、收获、一句话故事按成立 / 不成立两个分支各写一版，各做删除测试，各写适合的 venue 候选；不成立分支也要是读者会改变判断的发现。",
+      "expectations": [
+        "至少两个分支，各自一句话故事不超过 40 字",
+        "不成立分支有退路 venue",
+        "不把分支揉成一个，不替结果下结论"
+      ]
+    },
+    {
+      "id": "boundary-venue-changes-twist",
+      "kind": "boundary",
+      "prompt": "我们从一本安全应用期刊改投 TSE，把转折改成\"新框架显著优于基线\"，读者换成 SE 研究者。",
+      "expected_output": "读者和收获可以为 TSE 重写，转折这个事实和主张强度不能变；\"显著\"要有检验或区间，\"框架\"不能比方法大。",
+      "expectations": [
+        "允许改读者与收获措辞",
+        "拒绝改转折与主张强度",
+        "指回台账允许的措辞"
+      ]
+    }
+  ]
+}

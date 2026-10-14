@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Writing Orchestrator"
+  short_description: "Stage-gated academic manuscript workflow"
+  default_prompt: "Use $paper-writing-orchestrator to identify my manuscript stage and coordinate the next evidence-bounded step."

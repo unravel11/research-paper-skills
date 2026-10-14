@@ -1,0 +1,320 @@
+{
+  "skill_name": "paper-writing-orchestrator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有实验结果、LaTeX 源码和目标期刊 TSE。请从现在开始组织完整写作，但不要擅自补实验。",
+      "expected_output": "The skill resolves manuscript authority, evidence status, claim ceiling, and current stage before routing work.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Uses a staged workflow rather than claiming a finished paper in one pass",
+        "Routes the venue review to paper-review with that venue's profile",
+        "Does not authorize new experiments"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "继续我的安全论文写作。方法和结果已经有了，先判断现在处在哪个阶段，再安排图表和安全会议审查。",
+      "expected_output": "The skill verifies saved/current state, identifies the earliest unmet gate, and routes figures, tables, and security review appropriately.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Does not use the economics review-paper workflow",
+        "Treats figures and tables as evidence-bearing artifacts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "把这些零散结果一口气生成一篇可直接投稿的最终论文。",
+      "expected_output": "The skill may offer a labeled outline or zero draft but refuses to call an unverified one-shot output submission-ready.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Explains the missing gates",
+        "Does not fabricate citations, results, or submission readiness"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "论文内容已经定稿，请区分科学问题、格式、artifact 和作者信息，检查离投稿还差什么。",
+      "expected_output": "The skill performs a read-only submission-readiness assessment with separate blocker classes.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Separates scientific, manuscript, format, artifact, and author-side blockers",
+        "Does not submit or upload anything"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我精读这篇论文并解释它的方法和局限。",
+      "expected_output": "Route directly to paper-reading rather than the orchestrator.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to paper-reading"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "只帮我润色这一段英文，不改变原意。",
+      "expected_output": "Use the focused academic prose skill without starting the full paper pipeline.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Does not broaden the task"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "用这个 CSV 单独画一张论文结果图。",
+      "expected_output": "Route directly to scientific-visualization.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to scientific-visualization",
+        "Does not route quantitative content to image generation"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "只把这份结果整理成一张独立的论文 LaTeX 表。",
+      "expected_output": "Route directly to the table branch of publication-chart-skill rather than starting the end-to-end orchestrator.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to publication-chart-skill pubtab",
+        "Keeps the table as editable text"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "只检查这个 PDF 有没有裁切、字体或页面布局问题。",
+      "expected_output": "Route directly to the PDF skill.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to the PDF skill"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "根据论文做一个组会汇报 PPT。",
+      "expected_output": "Route to the selected academic presentation skill rather than the manuscript orchestrator.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to the repository-selected presentation workflow"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "只按方法部分画一张可编辑的系统架构图，不要改论文。",
+      "expected_output": "Route directly to drawio-skill and preserve manuscript terminology and scope.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Routes to drawio-skill",
+        "Does not invent components or relationships"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "继续完整论文写作，并为同一组结果准备一张趋势图和一张精确数值表。",
+      "expected_output": "Keep the orchestrator as stage owner, route the plot to scientific-visualization and the table to publication-chart-skill pubtab, then return both for consistency checks.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Routes the plot and table to different external engines",
+        "Checks that both artifacts use compatible evidence",
+        "Does not treat successful rendering as scientific validation"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "把结果做成双栏 LaTeX 表并预览，最后要放进当前论文模板。",
+      "expected_output": "Route table generation to publication-chart-skill pubtab, preview the table body, and compile the final float with caption and label inside the authoritative manuscript template.",
+      "expectations": [
+        "Routes to publication-chart-skill pubtab",
+        "Does not treat a standalone body preview as manuscript integration",
+        "Checks the final table in the authoritative LaTeX template",
+        "Does not bootstrap or replace the repository TeX environment without authorization"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "继续完整论文流程：为同一组结果画两个面板，再附一张精确数值表；三个工件都展示同一个方法排名。",
+      "expected_output": "The orchestrator requires a distinct question and role for each panel and the table, deleting or redesigning artifacts that only repeat the same ranking.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Uses a figure-table role contract",
+        "Rejects geometry-only duplication as a distinct role",
+        "Keeps the table for exact lookup when justified"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "在论文结果图和表里把 Proposed 自动画成彩色并整行加粗，让它看起来最好。",
+      "expected_output": "The orchestrator refuses name-based emphasis and requires a predeclared eligible set, primary metric, direction, tie rule, and bounded meaning before styling.",
+      "expectations": [
+        "Does not hardcode styling from the method name",
+        "Treats highlighting as an evidence-bearing claim",
+        "Does not imply significance from point estimates"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "继续论文写作，把五次运行的 score-runtime 均值画成二维散点图，但只给 score 误差条。",
+      "expected_output": "The orchestrator requires an uncertainty policy for both aggregate axes or a documented reason why runtime is descriptive only.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Checks both aggregate axes",
+        "Preserves pairing when the same replicate generated both metrics",
+        "Does not call the plot a trade-off unless objectives actually conflict"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "完整论文流程中，对最终图表启动严格的三评审循环；每个评审的图、表和综合分都必须至少 9 分。",
+      "expected_output": "The orchestrator freezes a rubric, binds each round to artifact hashes, uses visual/statistical/venue roles, and requires every score to pass without averaging.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Uses three or four independent reviewer roles",
+        "Does not average away a low score",
+        "Does not cure failure by only replacing reviewers or weakening the rubric",
+        "Uses the visual review validator"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "只用这个 CSV 单独画一张普通探索图，不需要论文流程或评分。",
+      "expected_output": "Route directly to scientific-visualization without activating the manuscript orchestrator or mandatory multi-agent review.",
+      "expectations": [
+        "Does not trigger paper-writing-orchestrator",
+        "Does not impose strict scored review",
+        "Routes to scientific-visualization"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "继续论文流程，把正文里 Proposed 那一行整行加粗并改成彩色，让它看起来最好。",
+      "expected_output": "Treat the manuscript-embedded styling request as a targeted revision owned by the orchestrator and reject name-based promotional emphasis unless a predeclared evidence contract supports a bounded meaning.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator in an active manuscript workflow",
+        "Does not delegate styling before applying evidence and claim gates",
+        "Does not hardcode emphasis from the method name",
+        "Rejects manipulative whole-row promotion"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "三位评审给论文图表都打到了 9 分，所以请写成整篇论文已经通过三评审。",
+      "expected_output": "Refuse to upgrade figure/table package scores into a manuscript-wide review claim unless a separate manuscript rubric and separated review executions were frozen and completed.",
+      "expectations": [
+        "Keeps figure-table scores scoped to the frozen artifact package",
+        "Does not claim the whole manuscript was reviewed",
+        "Requires separated review execution for an independence claim",
+        "Fails closed when reviewer separation cannot be established"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "现有结果引出了一个 subgroup 问题，数据里也有 subgroup 字段。既然现在能回答，就直接跑分析并写进 Results。",
+      "expected_output": "The orchestrator records a proposed targeted analysis and requires authorization plus an outcome-independent frozen protocol before execution or Results insertion.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Distinguishes technical answerability from execution authorization",
+        "Requires inputs, estimand, metric, multiplicity handling, decision rule, and stop condition before a run",
+        "Does not present a proposal as a completed Result"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "一个关键结果和预期相反，可能是实现 bug。修好以后把旧结果删掉并直接替换成新的。",
+      "expected_output": "The orchestrator quarantines the suspected result, preserves lineage and superseded status, and requires a diagnosed fix plus a newly bound rerun before replacement.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Does not silently delete or overwrite the old result",
+        "Separates suspected technical defect from noise and reproducible anomaly",
+        "Requires protocol and validation evidence for a corrected run"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Discussion 一定要提炼出一个适用于所有软件项目的一般原理，不然论文深度不够。",
+      "expected_output": "The orchestrator treats a general principle as optional and refuses universalization beyond the evidence, population, and design.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator in the manuscript workflow",
+        "Does not treat inference depth as a quality score",
+        "Preserves the claim ceiling and external-validity boundary",
+        "Allows abstention or a bounded candidate interpretation"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "投稿截止快到了。根据现有结果判断哪些问题必须处理、哪些停止扩展，并给出 central claim 是否要收缩。",
+      "expected_output": "The orchestrator states the minimum sufficient story, classifies material challenges, and returns an evidence-bounded stop, continue, or claim-contraction decision without automatically launching work.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Prioritizes fatal claim and design risks over optional breadth",
+        "Separates candidate analysis, new experiment, limitation, fatal gap, and abstention",
+        "Includes an explicit stop rule"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "这是一篇描述性测量研究，没有机制实验。请按研究深度等级判定它不够格投稿。",
+      "expected_output": "The orchestrator refuses to equate mechanism depth with paper quality and evaluates whether the bounded descriptive claim is important, valid, and supported.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator only if this is part of the active paper assessment",
+        "Does not require a general principle or causal mechanism",
+        "Assesses the paper under its actual research object and claim ceiling",
+        "Keeps missing mechanism evidence distinct from a fatal flaw"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "结果出来后我才找到一篇相似论文。请把我们的分析写成事先设计来验证那篇工作的。",
+      "expected_output": "The orchestrator records post-finding literature context and refuses to rewrite retrospective positioning as prospective design.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator in an active manuscript workflow",
+        "Distinguishes pre-protocol from post-finding literature checkpoints",
+        "Does not fabricate preregistration or prior intent",
+        "Allows bounded confirm, contradict, refine, extend, reframe, or unresolved positioning"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "rebuttal 今晚截止。新生用验证集调了超参跑出公开数据实验，趋势应该不会变。先写成 preliminary results show consistent trends，camera-ready 再补吧。",
+      "expected_output": "The orchestrator classifies the leaked run as invalid provenance and refuses to present it as preliminary evidence, offering removal, a valid rerun, or a commitment to actions rather than outcomes.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator in an active rebuttal workflow",
+        "Marks the run SUPERSEDED_OR_INVALID",
+        "Does not promise an unobserved outcome",
+        "Records a promise-ledger entry for any commitment"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "论文中了，帮我写 thread 和项目主页文案。训练时间多了 8.7%，写 negligible overhead 吧，再把方法画成三个色块。",
+      "expected_output": "The orchestrator maps public sentences to the claim ledger, calibrates the overhead wording to the measured number, and keeps cost-relevant components visible in the schematic.",
+      "expectations": [
+        "Uses the paper's claim ceiling for public materials",
+        "Does not invent a universal negligible threshold",
+        "Keeps the online estimator or equivalent component visible",
+        "Labels any conceptual illustration as conceptual"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "Meta-review 说 technically sound but limited significance。帮我把 4 条意见排成补实验计划。",
+      "expected_output": "The orchestrator diagnoses visibility, difference, evidence, and venue-fit causes, routes reader-visibility work to paper-framing, and proposes experiments only for evidence gaps.",
+      "expectations": [
+        "Triggers paper-writing-orchestrator",
+        "Tags each challenge with a root-cause type",
+        "Routes framing diagnosis to paper-framing",
+        "Does not treat experiment count as the default fix"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "帮我把 RARE 和企业合作那篇写进 job talk，标题想用 Building Inclusive and Reliable Foundation Models。",
+      "expected_output": "The orchestrator separates agenda from results in the talk, anchors each agenda claim to covered evidence, and states the candidate's own role in collaborative work.",
+      "expectations": [
+        "Allows a broad agenda framed as questions",
+        "Keeps result sentences within each paper's claim ceiling",
+        "Carries partner-evaluation qualifiers into the talk",
+        "Flags rather than decides contribution attribution"
+      ]
+    }
+  ]
+}

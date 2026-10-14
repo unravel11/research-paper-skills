@@ -1,0 +1,4 @@
+interface:
+  display_name: "创新点探讨（R0）"
+  short_description: "阶段锁 + 渐进式披露：主题入口读文献给候选思路，异常入口先排伪像再变方向，落盘 docs/innovation-log.md"
+  default_prompt: "使用 $innovation-explore，先确认研究设定（主题、前提条件、已排除方向）或写下观察句并排伪像，再按阶段锁推进；不给实验方案、论文结构或投稿建议。"

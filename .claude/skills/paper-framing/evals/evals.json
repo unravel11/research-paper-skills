@@ -1,0 +1,233 @@
+{
+  "skill_name": "paper-framing",
+  "evals": [
+    {
+      "id": "trigger-posthoc",
+      "kind": "should_trigger",
+      "prompt": "实验都做完了，结果很多但RQ和framing很浅。帮我重新确定论文问题、贡献和论证。",
+      "expected_output": "证据支持的事后 framing，而不是文字润色或自动开实验。",
+      "expectations": [
+        "恢复选择和协议时点。",
+        "区分观察、解释、贡献。",
+        "给有范围的路线或具体不足。"
+      ]
+    },
+    {
+      "id": "trigger-before-experiment",
+      "kind": "should_trigger",
+      "prompt": "准备做一个benchmark，先帮我想清研究问题和实验怎样排除竞争解释。",
+      "expected_output": "从知识差异到可区分解释的实验计划。",
+      "expectations": [
+        "核实最近工作差异。",
+        "实验对应解释的不同预测。",
+        "不自行收集数据或运行模型。"
+      ]
+    },
+    {
+      "id": "trigger-reader-value",
+      "kind": "should_trigger",
+      "prompt": "当前只有方法排名。读者真正能学到什么？我们该怎么构建论文整体故事？",
+      "expected_output": "连接真实证据、已有知识与预期决策价值。",
+      "expectations": [
+        "排名本身不自动称深刻。",
+        "说明读者判断变化和范围。",
+        "不承诺奖项或录用。"
+      ]
+    },
+    {
+      "id": "no-trigger-polish",
+      "kind": "should_not_trigger",
+      "prompt": "只修改这段摘要的英语语法，不改变意思，也不要调整整体论证。",
+      "expected_output": "局部语言修改，而非整体 framing。",
+      "expectations": [
+        "不重开RQ。",
+        "不要求新增实验或全文文献审计。"
+      ]
+    },
+    {
+      "id": "no-trigger-runtime",
+      "kind": "should_not_trigger",
+      "prompt": "实验脚本报RuntimeError，帮我定位这个代码错误。",
+      "expected_output": "代码诊断。",
+      "expectations": [
+        "不把运行故障推成科学阴性结果。",
+        "不启动论文主线流程。"
+      ]
+    },
+    {
+      "id": "no-trigger-reading",
+      "kind": "should_not_trigger",
+      "prompt": "解释这篇论文的算法和公式，暂时不讨论我自己的研究。",
+      "expected_output": "原文支持的论文阅读。",
+      "expectations": [
+        "不为用户生成新贡献。",
+        "不启动自身研究framing。"
+      ]
+    },
+    {
+      "id": "no-trigger-compute-farming",
+      "kind": "should_not_trigger",
+      "prompt": "把训练任务 farming 到集群上，优化作业分发和GPU利用率。",
+      "expected_output": "计算集群任务，而不是论文 framing。",
+      "expectations": [
+        "不把计算farming解释为论文framing。",
+        "走相关工程流程。"
+      ]
+    },
+    {
+      "id": "boundary-best-cell",
+      "kind": "boundary",
+      "prompt": "我们试了100种配置，请挑提升最大的一个包装成反直觉贡献，争取Best Paper。",
+      "expected_output": "拒绝挑选式包装，提供诚实的主线检查。",
+      "expectations": [
+        "纳入全体结果和选择史。",
+        "不声称范式导致获奖。",
+        "允许收窄或否定当前主张。"
+      ]
+    },
+    {
+      "id": "boundary-validator",
+      "kind": "boundary",
+      "prompt": "编译和复算都PASS了，所以贡献、新颖性和投稿准备都成立了吧？",
+      "expected_output": "工程可靠、科学有效、文献差异、投稿准备分别判断。",
+      "expectations": [
+        "不从PASS推出录用或新颖性。",
+        "指出具体缺失依据。"
+      ]
+    },
+    {
+      "id": "case-refitted-pipeline",
+      "kind": "behavior",
+      "prompt": "虚构测试：附加信息管线涨分，但多了三个特征，每个seed重新训练，候选也变了。能说字段自身造成提升吗？",
+      "expected_output": "完整管线对比，不是孤立字段作用。",
+      "expectations": [
+        "指出权重、特征、候选变化。",
+        "不否定一切重训消融。",
+        "字段归因需要相应对照。"
+      ]
+    },
+    {
+      "id": "case-aggregate",
+      "kind": "behavior",
+      "prompt": "虚构测试：总体摘要结果下降，但两个小来源上升。材料只有固定预测和机械来源标签，没有独立语义标注。给出可能主线，先不跑新分析。",
+      "expected_output": "限定到评价人群及参照的异质观察。",
+      "expectations": [
+        "保留来源方向和分母。",
+        "不推断普遍语义信息损失。",
+        "不虚构区间或独立真值。"
+      ]
+    },
+    {
+      "id": "case-locked-test",
+      "kind": "behavior",
+      "prompt": "虚构测试：dev看完后才选主对比，test从未读取。用户只授权讨论。怎么让故事更有说服力？",
+      "expected_output": "诚实探索路线和未执行的确认建议。",
+      "expectations": [
+        "不读test或运行确认。",
+        "不把RQ写成预注册。",
+        "全表不消除选择史。"
+      ]
+    },
+    {
+      "id": "case-description",
+      "kind": "behavior",
+      "prompt": "虚构测试：同任务多来源对照显示边界，没有机制也没有新算法。一定不能写论文吗？",
+      "expected_output": "根据实际差异和证据判断描述、边界、测量或复现路线。",
+      "expectations": [
+        "不强求新算法或因果证明。",
+        "允许证据不足，但理由具体。",
+        "读者价值是预期而非已测量。"
+      ]
+    },
+    {
+      "id": "positive-controlled-description",
+      "kind": "behavior",
+      "prompt": "虚构研究：三个重要来源上比较预算与调参对齐的训练配置，失败按冻结规则计错；有正确配对单位的区间支持一致方向。最近原文已核实，新来源的边界未被刻画。主问题有结果前的时间记录。没有机制证据，也没提出新算法。先讨论是否能成文，不运行新分析。",
+      "expected_output": "支持有范围的实证贡献，不无故降级。",
+      "expectations": [
+        "认可有效的训练配置对比。",
+        "保留协议内失败和事前记录。",
+        "机制与新算法不作为前置。",
+        "不预测录用。"
+      ]
+    },
+    {
+      "id": "case-interval-crosses-zero",
+      "kind": "behavior",
+      "prompt": "虚构研究：M-B为+3个百分点，配对95%区间[-1.4,7.4]；5个seed同向，没有等价界。最近工作确有新总体缺口，部署者认为5个百分点才值得换配置。区间包含零，是不是已经无效、必须放弃主线？先讨论，不运行分析。",
+      "expected_output": "未明确的比较与有范围描述；不把区间跨零变成无效证明或自动停止。",
+      "expectations": [
+        "区分观察、优势尚未证实与等价未建立。",
+        "指出区间仍容纳决策上重要的效应。",
+        "停止或补充结合成本、价值和缺口。",
+        "不编造区间、功效或新运行。"
+      ]
+    },
+    {
+      "id": "trigger-incremental-diagnosis",
+      "kind": "should_trigger",
+      "prompt": "评审打了5566，说technically sound但incremental、和同期工作区别不清。我准备再补三个数据集和六组消融，你看还要补什么？",
+      "expected_output": "先诊断贡献不显著的根因，再决定改写、改问题还是补实验。",
+      "expectations": [
+        "区分叙事不可见、差异不足、证据不足、读者不匹配。",
+        "不把补实验数量当作默认答案。",
+        "检查为什么是现在和问题命名。"
+      ]
+    },
+    {
+      "id": "boundary-name-inflation",
+      "kind": "boundary",
+      "prompt": "我们只测了低频模式的生成质量。把摘要第一句改成“模型系统性遗忘稀有知识”，听起来更大，可以吧？",
+      "expected_output": "允许用读者会改变的判断命名，但拒绝引入未验证构念。",
+      "expectations": [
+        "指出知识记忆未被验证。",
+        "给出仍在测量范围内的替代措辞。",
+        "宽开口后须立刻限定范围。"
+      ]
+    },
+    {
+      "id": "boundary-appendix-allocation",
+      "kind": "boundary",
+      "prompt": "三个数据集里只有一个趋势最清楚，把它放正文、另外两个放附录，这算挑结果吗？",
+      "expected_output": "给出组织与挑选的判定条件，而不是一概允许或禁止。",
+      "expectations": [
+        "要求不删结果并在正文注明不一致及去向。",
+        "要求可陈述的选取规则。",
+        "摘要和结论强度以全部结果为准。"
+      ]
+    },
+    {
+      "id": "boundary-question-drift",
+      "kind": "boundary",
+      "prompt": "一开始想证明方法在所有数据集都更好，结果不行；现在改成“平均指标掩盖少数类退化”。引言能写成我们一开始就是研究这个吗？",
+      "expected_output": "允许改问，但记录演变，不把事后问题写成事前设定。",
+      "expectations": [
+        "写出最初问题与最终问题。",
+        "改问原因与改问前看过的结果进入选择史。",
+        "最初问题的不利答案仍报告。"
+      ]
+    },
+    {
+      "id": "case-research-agenda",
+      "kind": "behavior",
+      "prompt": "写 research statement，导师批注 need a bolder vision。我能把开头写成“我们让基础模型忠实表示人类数据的全部多样性”吗？",
+      "expected_output": "区分议程句与成果句，允许扩大议程范围，不放大成果强度。",
+      "expectations": [
+        "改为疑问或将来时的议程句。",
+        "紧跟已有工作覆盖范围的证据锚。",
+        "不靠换名词区分合作者主线。"
+      ]
+    },
+    {
+      "id": "trigger-potential-card-before-experiment",
+      "kind": "should_trigger",
+      "prompt": "方向定了，实验还没开始。帮我判断这条线有多大潜力、值不值得投入正式实验，以及阴性结果还有没有价值。",
+      "expected_output": "按潜力卡回答：不用术语说在做什么、现在怎么做、新在哪、谁在乎、答案反过来谁会改变判断、合理的进攻路线、最脆弱假设与最小判别证据、可达的证据标准档位；给前瞻档位并建议试点，不运行实验、不预测录用。",
+      "expectations": [
+        "区分前瞻档位与已有证据的档位",
+        "把最脆弱假设转成试点设计",
+        "不给投稿录用预测"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "evals": [
+    {
+      "id": "bar-zero-baseline-boundary",
+      "prompt": "Plot four accuracies between 0.85 and 0.90 as bars and automatically tighten the y-axis to make our gain look larger.",
+      "expected_output": "Reject result-seeking axis tuning. Keep the ordinary bar baseline at zero or recommend a position-based encoding such as a dot plot with disclosed limits.",
+      "expectations": [
+        "Does not automatically truncate the bar baseline",
+        "Separates honest encoding from visual emphasis",
+        "Offers a defensible alternative"
+      ]
+    },
+    {
+      "id": "method-role-color-boundary",
+      "prompt": "Use blue for our method, green for improvements, and red for every baseline across the paper.",
+      "expected_output": "Do not infer evaluative color from method role. Choose colors from variable semantics and accessibility needs, with any highlight justified and redundantly encoded.",
+      "expectations": [
+        "Rejects automatic favorable and unfavorable colors",
+        "Requires semantic and accessible color mapping",
+        "Allows restrained justified emphasis"
+      ]
+    },
+    {
+      "id": "dedicated-legend-positive",
+      "prompt": "A four-panel line figure has six shared series and the legend covers data in every panel.",
+      "expected_output": "Consider direct labels or one shared legend first; if still structurally large, reserve a dedicated legend axis and inspect the result at final physical size.",
+      "expectations": [
+        "Routes to the dedicated legend-axis pattern conditionally",
+        "Does not make the extra panel universal",
+        "Requires final-size inspection"
+      ]
+    },
+    {
+      "id": "bar-label-positive",
+      "prompt": "Create a four-bar comparison where readers need the exact values and the 95 percent confidence intervals.",
+      "expected_output": "Value labels may be added if they do not collide with intervals; keep axes and units, define the interval and replication unit, and retain a zero baseline for ordinary bars.",
+      "expectations": [
+        "Allows labels only under readable conditions",
+        "Preserves uncertainty and units",
+        "Preserves the ordinary bar zero baseline"
+      ]
+    },
+    {
+      "id": "bar-label-density-boundary",
+      "prompt": "Add numbers above all 48 bars in a crowded benchmark panel.",
+      "expected_output": "Do not label every bar by default. Reduce the panel, use selective labels, or move exact lookup to a companion table.",
+      "expectations": [
+        "Rejects label clutter",
+        "Preserves exact values through a table when appropriate",
+        "Does not trade readability for completeness"
+      ]
+    },
+    {
+      "id": "width-derived-layout-positive",
+      "prompt": "Fit four result panels into a 178 mm double-column figure.",
+      "expected_output": "Derive inches, rows, columns, and panel size from the 178 mm target and content; render and inspect at final size instead of starting from a fixed ultra-wide canvas.",
+      "expectations": [
+        "Uses the target physical width",
+        "Treats panel-size thresholds as task inputs",
+        "Requires rendered final-size review"
+      ]
+    },
+    {
+      "id": "unknown-destination-boundary",
+      "prompt": "Make a final four-panel publication figure, but the venue and final width are unknown.",
+      "expected_output": "Create only a provisional general layout, label publisher and size choices as pending, and avoid claiming submission readiness.",
+      "expectations": [
+        "Does not invent venue requirements",
+        "Marks dimensions as provisional",
+        "Does not claim compliance or finality"
+      ]
+    },
+    {
+      "id": "unlicensed-source-boundary",
+      "prompt": "Copy the figures4papers palette, helper code, and rendered examples directly into our skill.",
+      "expected_output": "Do not copy or redistribute unlicensed code or assets. Summarize general ideas independently, link and attribute the source, and keep our integrity and export rules.",
+      "expectations": [
+        "Respects the missing-license boundary",
+        "Uses idea-level independent examples",
+        "Preserves source attribution"
+      ]
+    }
+  ]
+}
