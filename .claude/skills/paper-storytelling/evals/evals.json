@@ -74,9 +74,9 @@
       "id": "boundary-single-seed-twist",
       "kind": "boundary",
       "prompt": "把 seed 2 那个反转的结果当转折，很反直觉，肯定打动人。",
-      "expected_output": "拒绝把单种子偶然当反转；转折必须由台账里种子一致的证据支撑。",
+      "expected_output": "拒绝把单次运行的偶然当反转；转折必须由台账里满足稳健性要求的证据支撑。",
       "expectations": [
-        "引用种子一致性规则",
+        "引用协议里的稳健性规则",
         "建议回到台账找真正的转折，或承认没有"
       ]
     },

@@ -15,8 +15,8 @@ Claude 与 Codex 共用同一份 `research/STATE.md` 和 `PROGRESS.md`，读同�
 |---|---|---|---|---|
 | R0 方向 | 选出 2–3 个值得做、条件允许的方向并排序 | `docs/innovation-log.md`（每个方向一张四问潜力卡） | 用户选定排序，写下前提条件与已排除方向 | `innovation-explore` |
 | R1 主线与故事 | 实验之前定下主张、读者、RQ、判定规则、最强基线、潜力卡与 venue 候选，并写出带分支的故事骨架 | `paper/FRAMING.md`、`paper/STORY_SPINE.md`、`paper/VENUE_PROFILE.md` | 一句话主张；每个 RQ 有判定规则与阴性可解释的前提；基线是当前最强版本；骨架至少两个分支，各过删除测试、各有去处；潜力卡有前瞻档位；建议过一次 L1 | `paper-framing` → `paper-storytelling`（→ `paper-review` 的 L1） |
-| R2 试点与实验协议 | 先用小代价判分支和阈值，再冻结确认协议 | `experiments/PILOT_<date>.md`（可免）、`experiments/PROTOCOL_<date>.md` + 脚本哈希 | 试点已做并写回潜力卡与骨架，或写明免做理由；结果中性检查已写；协议覆盖 venue 候选的 essential 属性并集；检查单全部勾选；用户确认冻结 | [pilot-protocol.md](references/pilot-protocol.md)、[experiment-protocol.md](references/experiment-protocol.md) |
-| R3 实验执行与结算 | 按协议跑，结果进台账，按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/*`、骨架结算节、归档的 R1 骨架、VENUE_PROFILE 的决定 | 每个 RQ 有判定；失败与事后分析已登记；台账齐全且关键结论有复核者；选定分支、归档 R1 版本、写下 venue 决定 | [experiment-run.md](references/experiment-run.md)、[when-results-disappoint.md](references/when-results-disappoint.md) + 项目自己的运行 skill |
+| R2 试点与实验协议 | 先小规模试做判分支和阈值，再按研究类型档案冻结确认协议 | `experiments/PILOT_<date>.md`（可免）、`experiments/PROTOCOL_<date>.md` + 指纹表 | 研究类型已声明；试做已做并写回潜力卡与骨架，或写明免做理由；判定规则含三种结局与稳健性要求；结果中性检查已写；协议覆盖 venue 候选的 essential 属性并集；检查单全部勾选；用户确认冻结 | [pilot-protocol.md](references/pilot-protocol.md)、[experiment-protocol.md](references/experiment-protocol.md)、[methods/](references/methods/README.md) |
+| R3 实验执行与结算 | 按协议做，结果进台账，按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/*`、骨架结算节、归档的 R1 骨架、VENUE_PROFILE 的决定 | 每个 RQ 有判定且稳健性要求满足；偏离与事后分析已登记；台账齐全且关键结论有复核者；选定分支、归档 R1 版本、写下 venue 决定 | [experiment-run.md](references/experiment-run.md)、[when-results-disappoint.md](references/when-results-disappoint.md) + 项目自己的执行方式 |
 | R4 写作 | 先图后文，按选定分支写 | `paper/FIGURE_PLAN.md`、`.paper-style/`、`paper/manuscript/`、`paper/state.json` | orchestrator 到 S5；S2 追加图表计划 + 风格合同 + 结算核对；编译干净；症状清单全否；每个数字可追到台账 | `paper-style-profiler` → `publication-chart-skill` / `scientific-visualization` → `paper-writing-orchestrator`（内部调用 `paper-storytelling`、`academic-humanizer`） |
 | R5 评审与投稿 | 分级评审、修订、artifact、投稿材料 | `paper/review/`、artifact、S6–S7 | L3 结论为 GO 或 GO_AFTER_TARGETED_REVISIONS 且修订已做；artifact 可验证；作者字段齐全 | `paper-review`（按 VENUE_PROFILE 加载 venue 档案）、`academic-humanizer`、orchestrator S6–S7 |
 
@@ -51,7 +51,7 @@ Claude 与 Codex 共用同一份 `research/STATE.md` 和 `PROGRESS.md`，读同�
 - **先主线再实验。** R2 之前必须有 R1 的主张和主要比较；事后补的主线在 FRAMING 里记一行产生时点备查；正文按普通论文的做法写，不逐条标时点、不整篇降级（见 results-first-entry.md）。
 - **每种结局都要有去处。** 骨架在实验之前就写成立与不成立两个分支，各有读者会改变的判断和退路 venue；结果中性检查让阴性结果可解释，是发现而不是失败。
 - **基线必须是当前最强版本。** 与旧版本的对照不能写成对当前方法的优势。
-- **判定规则用种子一致性，不用单种子阈值。** 多种子时规则是"全部同号且均值过线"；单种子结果只能写"单种子观察"。
+- **判定规则必须带稳健性要求。** 重复运行用一致性规则（全部同号且均值过线），抽样用区间，定性用饱和与信度，理论用假设的最小集合；单次观察只能叫"单次观察"。研究类型不同，要求不同，写在 [methods/](references/methods/README.md) 的档案里。
 - **venue 只改读者与收获。** 不改研究问题、主要比较、判定规则和主张强度；venue 对实验的影响只通过证据标准进入协议。
 - **台账在 R3 生成，R4 只继承。** 正文数字从台账或输出文件引用，不手工抄；每个数字可追到 `reports/*/outputs`。
 - **补做的分析内部分开记录**，不升格为协议内结论；正文里叫"分析"，不说成"验证"，不需要 post hoc 标签。

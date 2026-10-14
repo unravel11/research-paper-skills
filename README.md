@@ -22,8 +22,8 @@ flowchart LR
 |---|---|---|---|
 | R0 方向 | 选出 2–3 个值得做、条件允许的方向并排序；主题入口读文献迁移，异常入口先排伪像再刻画现象 | `docs/innovation-log.md`（每个方向一张四问潜力卡） | `innovation-explore` |
 | R1 主线与故事 | 实验前定主张、读者、RQ、判定规则、最强基线、潜力卡与 venue 候选；写带分支的故事骨架 | `paper/FRAMING.md`、`paper/STORY_SPINE.md`、`paper/VENUE_PROFILE.md` | `paper-framing` → `paper-storytelling`（→ `paper-review` 的 L1 前瞻用法） |
-| R2 试点与实验协议 | 先试点定阈值与分支，再冻结协议：数据、比较、判定规则、结果中性检查、种子一致性、哈希、授权 | `experiments/PILOT_<date>.md`、`experiments/PROTOCOL_<date>.md` | `research-pipeline/references/pilot-protocol.md`、`experiment-protocol.md` |
-| R3 实验执行与结算 | 按协议跑，生成 RESULT.md 与台账；按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/`、骨架结算与归档 | `research-pipeline/references/experiment-run.md`、`when-results-disappoint.md` + 项目自己的运行脚本 |
+| R2 试点与实验协议 | 先小规模试做定阈值与分支，再按研究类型档案冻结协议：对象与数据、比较或分析、三种结局的判定规则、稳健性要求、结果中性检查、指纹、授权 | `experiments/PILOT_<date>.md`、`experiments/PROTOCOL_<date>.md` | `research-pipeline/references/pilot-protocol.md`、`experiment-protocol.md`、`methods/` 七种研究类型档案 |
+| R3 实验执行与结算 | 按协议做，生成 RESULT.md 与台账，登记偏离；按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/`、骨架结算与归档 | `research-pipeline/references/experiment-run.md`、`when-results-disappoint.md` + 项目自己的执行方式 |
 | R4 写作 | 先风格锚点与图表，再按骨架写正文 | `paper/FIGURE_PLAN.md`、`.paper-style/`、`paper/manuscript/`、`paper/state.json` | `paper-style-profiler` → `publication-chart-skill` / `scientific-visualization` → `paper-writing-orchestrator`（内部用 `paper-storytelling`、`academic-humanizer`） |
 | R5 评审与投稿 | 分级评审、修订、artifact、投稿材料 | `paper/review/`、artifact | `paper-review`（按 venue 档案）、`academic-humanizer`、orchestrator S6–S7 |
 
@@ -83,7 +83,7 @@ python3 $P/scripts/check_gates.py ~/papers/my-paper                             
 
 ## 固化进流程的规则
 
-先主线再实验；每种结局都要有去处（骨架分支 + 结果中性检查）；基线是当前最强版本；判定规则用种子一致性；venue 只改读者与收获；台账在 R3 生成、R4 只继承；补做的分析分开记录、不升格为协议内结论；图表优先；故事不改证据；渐进式披露；授权只来自用户的具体决定；评审要看渲染后的 PDF。来由与完整条目见 [CONTEXT.md](CONTEXT.md)。
+先主线再实验；每种结局都要有去处（骨架分支 + 结果中性检查）；基线是当前最强版本；判定规则带稳健性要求；venue 只改读者与收获；台账在 R3 生成、R4 只继承；补做的分析分开记录、不升格为协议内结论；图表优先；故事不改证据；渐进式披露；授权只来自用户的具体决定；评审要看渲染后的 PDF。来由与完整条目见 [CONTEXT.md](CONTEXT.md)。
 
 ## 维护
 

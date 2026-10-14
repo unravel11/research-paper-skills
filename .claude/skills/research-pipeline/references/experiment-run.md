@@ -1,78 +1,65 @@
-# R3 实验执行：按协议跑，结果进台账
+# R3 执行：按协议做，结果进台账
 
-执行本身用项目自己的运行 skill（ssh / GPU / 队列脚本）；本 reference 只规定执行的纪律和产出。
+执行本身用项目自己的运行方式（脚本、队列、访谈、证明助手）；本 reference 只规定执行的纪律和产出。研究类型特有的记录项见 [methods/](methods/README.md) 对应档案的"RESULT 追加小节"。
 
 ## 开始前
 
-- 核对协议哈希与当前脚本哈希一致（`python3 <skill_dir>/scripts/check_gates.py <项目> --stage R2` 会逐行比对协议里的哈希表）；不一致先记差异，不改协议。
-- 核对授权：这次运行属于协议里哪条授权；训练 / API / 真实数据分别核。
-- 登记 `PROGRESS.md` 任务行：任务 ID、执行者、范围、完成条件。
-- 远端工作目录与输出路径按项目的 START_HERE / GPU_ACCESS 规则；本地不落原始数据。
+- 核对协议指纹：脚本、配置、量表、编码本与协议表一致；不一致就先登记偏离，不悄悄改。
+- 核对环境与版本、授权（真实数据、API、参与者招募、外发各自独立）。
+- 登记 `PROGRESS.md` 的任务行：执行者、复核者、完成条件。
 
-## 运行中
+## 执行中
 
-- 每个 cell（配置 × 种子 × 集合）跑完写完成标记；失败写失败回执并保留，不删。
-- 重跑只针对失败的 cell，并记录原因（例如内存错误），不借机重跑已成功的 cell。
-- 不看 test 结果改配置。dev 只能做协议允许的三件事：完成性检查、温度 / 阈值拟合、按协议决定进入 test 的配置。
-- 中途想加的分析一律先写进"事后分析"节，再跑。
+- 协议只追加不修改：新情况写补充协议并记日期。
+- 失败、重做、中断如实登记：原因、是否影响已完成部分、重做是否在同一协议下。
+- 不中途看确认性结果来调整设计；需要看就记为偏离，并说明看到了什么。
+- 原始数据、模型、录音、日志按项目规则留在远端或受控位置，本地只放轻量汇总。
 
 ## 结束后：RESULT.md
 
-`reports/<run>/RESULT.md` 固定包含：
-
-1. 协议引用与哈希核对结果。
-2. 完成标记统计（例如 22/22），失败与重跑清单。
-3. 每个 RQ 的判定：数值、区间、规则、结论（成立 / 不成立 / 不能判定）。种子表完整列出，不挑选。
-4. 事后分析一节：每条标 post hoc、触发原因、是否影响主张。
-5. 输出文件清单（`outputs/`），每个正文可能引用的数字都能指到文件。
-6. 本地与远端同步状态；未核实项。
-
-骨架如下（`check_gates.py` 检查"判定"、"事后分析"、哈希核对三节是否存在）：
-
 ```markdown
-# RESULT：<run 名>
+# RESULT：<run 或批次名>
+- 研究类型：
 
-## 协议与哈希核对
-- 协议：experiments/PROTOCOL_<date>.md（冻结哈希：）
-- 脚本哈希与协议一致：是 / 否（差异：）
+## 协议与指纹核对
+- 协议文件与冻结时间；指纹逐项一致 / 不一致项与处理
 
-## 完成统计
-- cell 完成 <n>/<N>；失败回执：…；重跑：…（原因）
+## 完成情况
+- 按档案给的形式：运行表、对象表、参与者流程（招募 → 排除 → 分析）、证明状态表
 
 ## 结果中性检查
-| 检查 | 通过标准 | 结果 | 影响的 RQ |
-|---|---|---|---|
+- 每项检查的结果；不通过的 RQ 标"不能判定"
 
-## 判定
-| RQ | 规则（引自协议） | 数值与区间 | 种子表 | 结论（成立 / 不成立 / 不能判定） | 证据 ID |
-|---|---|---|---|---|---|
+## 判定（每个 RQ 一条）
+- 成立 / 不成立 / 不能判定；按协议规则得出；稳健性要求是否满足（重复一致、区间、饱和、假设集合）
+
+## 偏离登记
+- 日期、内容、理由、谁决定、对结论的影响；无偏离写"无"
 
 ## 事后分析（post hoc）
-| 分析 | 触发原因 | 结果 | 是否影响主张 | 证据 ID |
-|---|---|---|---|---|
+- 看过结果后新增的分析：触发原因、是否影响主张；内部记录，不升格为协议内结论
 
 ## 输出文件清单
-- outputs/…
+- 每个要进正文的数字对应的输出文件
 
 ## 同步与未核实
-- 本地 / 远端：
-- 未核实：
-- 复核者与复核结果：
+- 远端位置、未核实项、下一位该从哪开始
 ```
 
 ## 台账
 
-- 文件在 `paper/ledger/`：`evidence_inventory.csv`（或 `.json`）每条结果一行，状态按 orchestrator 合同（`VERIFIED_CURRENT` / `CONTROLLED_OR_RETROSPECTIVE` / `EXPLORATORY_OR_CANDIDATE` / `SUPERSEDED_OR_INVALID` / `MISSING_OR_UNRESOLVED`），`output_file` 指到输出文件；`claim_ledger.csv` 每条可写进论文的主张一行，允许强度与禁止升格写清，状态 `SUPPORTED` / `WEAKEN` / `ABSTAIN` / `REMOVE_FROM_CURRENT_CHAIN`。列定义见项目骨架 `paper/ledger/README.md`。
-- 有脚本就从输出文件生成台账，不手写；长期项目存 JSON 并校验。R4 的 orchestrator S1 直接继承这两张表。
+- 证据台账 `paper/ledger/evidence_inventory.*`：每条证据一行，状态用合同里的五个值（`VERIFIED_CURRENT` / `CONTROLLED_OR_RETROSPECTIVE` / `EXPLORATORY_OR_CANDIDATE` / `SUPERSEDED_OR_INVALID` / `MISSING_OR_UNRESOLVED`）。
+- 主张台账 `paper/ledger/claim_ledger.*`：每个主张一行，状态用 `SUPPORTED` / `WEAKEN` / `ABSTAIN` / `REMOVE_FROM_CURRENT_CHAIN`，依据指向证据 ID。
+- 正文数字只从台账或输出文件引用，不手工抄。
 
 ## 结果不如预期
 
-先归类再动手：实现错误、数据问题、设计缺陷、真实阴性，证据要求和允许的动作见 [when-results-disappoint.md](when-results-disappoint.md)。只有实现错误允许同协议重跑；真实阴性走骨架的不成立分支。
+按 [when-results-disappoint.md](when-results-disappoint.md) 四类归因；只有实现错误允许同协议重做。
 
 ## 结束后：故事结算
 
-RESULT.md 写完后，把 `paper/STORY_SPINE.md` 的 R1 版本复制为 `paper/STORY_SPINE_R1_<date>.md` 归档，再在 STORY_SPINE.md 的“结算”节按台账选定分支，并在 `paper/VENUE_PROFILE.md` 填“决定”。这是 R3 到 R4 的门槛之一。
+把 R1 骨架复制为 `paper/STORY_SPINE_R1_<date>.md` 归档；按台账在"结算"节选定一个分支并写证据 ID；填落实决定；`paper/VENUE_PROFILE.md` 写决定与理由。规则见 `paper-storytelling/references/story-spine-template.md`。
 
 ## 复核
 
-关键结论登记复核者。复核者至少做：只读取回执核对完成标记、用预登记脚本重算一次、与独立实现对比一次（如 bootstrap）。复核结果写进 RESULT.md 与 PROGRESS.md，完成前状态是"待复核"。
+关键结论登记复核者；复核者实际查证据：读回执、重算、对照独立实现或原始材料，不是看一眼。

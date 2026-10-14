@@ -70,6 +70,19 @@ TOKEN_RE = re.compile(r"[㐀-䶿一-鿿豈-﫿]|[A-Za-z0-9]+")
 # 、 ； ; or line breaks; an annotation in brackets after a path is not part of it.
 INDEX_PAIR_RE = re.compile(r"`?(?P<lhs>[^`、；;：:\s]+)`?[ \t]*(?:→|->|=>)[ \t]*`?(?P<rhs>[^`、；;\s（）()]+)`?")
 
+# Research-type profiles under references/methods/; the protocol declares one with "- 研究类型：<name>".
+METHOD_DIR = Path(__file__).resolve().parents[1] / "references" / "methods"
+METHOD_MANUAL = {
+    "quantitative-experiment": "量化实验档案：划分与不碰的评测集、基线调参公平、重复次数与一致性规则、区间与多重比较、环境版本",
+    "measurement-study": "测量研究档案：抽样框与分母表、筛选条件人工验证、度量效度、标注信度、主张类型与证据匹配",
+    "tool-or-system-evaluation": "工具评估档案：对象集代表性、替代方案公平配置、真值与裁决规则、失败计入分母、消融对应主张",
+    "case-study-or-qualitative": "案例与定性档案：选择理由、提纲或问卷为指纹、编码本与分歧处理、饱和与信度、反例搜索、伦理",
+    "human-subjects-experiment": "人类参与者实验档案：假设与变量、随机分配、功效与最小可检测效应、操作检查、预注册时间戳、伦理",
+    "formal-or-theoretical": "形式化档案：假设清单与必要性、证明义务表、机械化边界、退化情形与反例搜索",
+    "replication": "复现档案：复现类型三轴、与原研究差异登记、一致性标准事先定、原作者关系透明",
+}
+METHOD_RE = re.compile(r"^-?[ \t]*研究类型[^:：\n]*[:：][ \t]*(\S.*)$", re.M)
+
 # Items a person must judge; the script only lists them for the current stage.
 MANUAL = {
     0: [
@@ -78,7 +91,7 @@ MANUAL = {
         "从观察起步的方向：伪像排查先于重要性判断，未排除的写进前提条件，排查与刻画的产出标 exploratory",
     ],
     1: [
-        "每个 RQ 有且只有一个主要比较；判定规则含非劣界或最小有意义差异与种子一致性规则，没有“视情况”；阴性可解释的前提已写",
+        "每个 RQ 有且只有一个主要比较；判定规则写了成立、不成立、不能判定与稳健性要求（按研究类型），没有“视情况”；阴性可解释的前提已写",
         "基线是当前最强版本，版本来源写明",
         "读者、原信念、张力有依据；每个分支的转折是读者会改变判断的发现，不成立分支有退路 venue",
         "潜力卡有前瞻档位；venue 候选的 essential 属性并集已写进 VENUE_PROFILE",
@@ -86,16 +99,17 @@ MANUAL = {
         "用户确认主张、骨架与 venue 候选",
     ],
     2: [
-        "判定规则在看到任何 test 结果之前写定；dev 的三个允许用途写清；保护集规则明确",
-        "试点结论已写回潜力卡与骨架分支（或免做理由成立）；试点数据未被用作论文证据",
+        "判定规则在接触任何确认性结果之前写定，三种结局都写了；没有“视情况”",
+        "稳健性要求按研究类型档案写明；对象与数据的来源、选择、已看过与不碰的部分写清",
+        "试做结论已写回潜力卡与骨架分支（或免做理由成立）；试做材料未被用作论文证据",
         "结果中性检查能让阴性结果可解释；协议覆盖 venue 候选的 essential 属性并集",
-        "分析脚本也在哈希表里",
+        "分析脚本也在指纹表里；偏离登记表已建",
         "授权逐项引用用户决定，不由阶段推导",
         "用户确认冻结，冻结时间已记录",
     ],
     3: [
-        "每个 RQ 有按协议规则得出的判定（成立 / 不成立 / 不能判定），种子表完整不挑选；结果中性检查结果已记录",
-        "事后分析带 post hoc 与触发原因，没有升格为协议内结论；结果不如预期已按四类归因",
+        "每个 RQ 有按协议规则得出的判定（成立 / 不成立 / 不能判定），稳健性要求按档案核对，不挑选；结果中性检查结果已记录",
+        "偏离已登记（日期、理由、谁决定、影响），没有以结果为理由的偏离；事后分析带 post hoc 与触发原因，没有升格为协议内结论；结果不如预期已按四类归因",
         "结算选定的分支与台账一致，没有把分支揉在一起；venue 决定写了理由",
         "关键结论登记了复核者，复核者实际重算过",
         "原始数据、模型、日志留在远端；本地只有轻量汇总",
@@ -477,6 +491,30 @@ def settlement_checks(root: Path, layout: Layout) -> list[Check]:
     return out
 
 
+def declared_methods(text: str) -> list[str]:
+    """Profile names declared on the 研究类型 line, normalised to file stems."""
+    match = METHOD_RE.search(text)
+    if not match:
+        return []
+    names = re.split(r"[、,，;；/ ]+", match.group(1).strip())
+    return [re.sub(r"\.md$", "", n.strip("`（）() ")) for n in names if n.strip("`（）() ")]
+
+
+def method_checks(text: str) -> list[Check]:
+    names = declared_methods(text)
+    if not names:
+        return [Check("研究类型已声明（- 研究类型：<档案名>）", False, "未声明；可用档案见 references/methods/README.md")]
+    out: list[Check] = []
+    for name in names:
+        exists = (METHOD_DIR / f"{name}.md").is_file()
+        out.append(Check(f"研究类型档案存在：{name}", exists, "references/methods/" + name + ".md" if exists else "没有这个档案；按 methods/README.md 的结构新建或改名"))
+    return out
+
+
+def method_manual(text: str) -> list[str]:
+    return [METHOD_MANUAL[n] for n in declared_methods(text) if n in METHOD_MANUAL]
+
+
 def checks_r2(root: Path, layout: Layout) -> list[Check]:
     key = "experiments/PROTOCOL_<date>.md"
     protocols = layout.files(key)
@@ -485,8 +523,10 @@ def checks_r2(root: Path, layout: Layout) -> list[Check]:
     protocol = protocols[-1]
     text = read_text(protocol)
     out = [Check(rel(root, protocol), True, "存在（取名称最新）" + layout.note(key))]
-    out.append(Check("协议含 SHA-256 哈希", bool(SHA_RE.search(text)), "有" if SHA_RE.search(text) else "没有任何 64 位十六进制哈希"))
+    out.extend(method_checks(text))
+    out.append(Check("协议含指纹（SHA-256）", bool(SHA_RE.search(text)), "有" if SHA_RE.search(text) else "没有任何 64 位十六进制哈希"))
     out.append(Check("协议含冻结记录", "冻结" in text, "有" if "冻结" in text else "未出现“冻结”"))
+    out.append(Check("协议含判定规则的三种结局", all(k in text for k in ("成立", "不成立", "不能判定")), "有" if all(k in text for k in ("成立", "不成立", "不能判定")) else "缺少“成立 / 不成立 / 不能判定”之一"))
     neutral = "结果中性" in text
     out.append(Check("协议含结果中性检查", neutral, "有" if neutral else "未出现“结果中性检查”"))
     pilot_key = "experiments/PILOT_<date>.md"
@@ -526,8 +566,9 @@ def checks_r3(root: Path, layout: Layout) -> list[Check]:
         out.append(Check("RESULT.md 含判定", "判定" in text, "有" if "判定" in text else "未出现“判定”"))
         post_hoc = "事后分析" in text or "post hoc" in text.lower()
         out.append(Check("RESULT.md 含事后分析节", post_hoc, "有" if post_hoc else "未出现“事后分析 / post hoc”"))
-        hashed = "哈希" in text or bool(SHA_RE.search(text))
-        out.append(Check("RESULT.md 含哈希核对", hashed, "有" if hashed else "未出现哈希核对"))
+        hashed = "哈希" in text or "指纹" in text or bool(SHA_RE.search(text))
+        out.append(Check("RESULT.md 含指纹核对", hashed, "有" if hashed else "未出现指纹 / 哈希核对"))
+        out.append(Check("RESULT.md 含偏离登记", "偏离" in text, "有" if "偏离" in text else "未出现“偏离登记”（无偏离也要写“无”）"))
     else:
         out.append(Check(layout.label(key), False, layout.missing(key)))
 
@@ -735,6 +776,11 @@ def main(argv: list[str] | None = None) -> int:
         stage = info.stage
 
     checks = index_notices(root, layout, stage) + CHECKS[stage](root, layout)
+    manual = list(MANUAL[stage])
+    if stage in (2, 3):
+        protocols = layout.files("experiments/PROTOCOL_<date>.md")
+        if protocols:
+            manual.extend(method_manual(read_text(protocols[-1])))
     failed = [c for c in checks if c.ok is False]
     passed = [c for c in checks if c.ok is True]
     exit_code = 1 if failed else 0
@@ -748,7 +794,7 @@ def main(argv: list[str] | None = None) -> int:
             "layout": layout.overrides,
             "index_unknown": layout.unknown,
             "checks": [asdict(c) for c in checks],
-            "manual": MANUAL[stage],
+            "manual": manual,
             "next_steps": info.next_steps,
             "file_level_passed": not failed,
         }
@@ -771,13 +817,13 @@ def main(argv: list[str] | None = None) -> int:
         detail = f" — {check.detail}" if check.detail else ""
         print(f"  [{mark}] {check.label}{detail}")
     print("需人工核对：")
-    for item in MANUAL[stage]:
+    for item in manual:
         print(f"  - {item}")
     if info.next_steps:
         print("STATE.md 下一步：")
         for step in info.next_steps:
             print(f"  - {step}")
-    print(f"结论：文件级核对 {len(passed)}/{len(passed) + len(failed)} 通过；人工项 {len(MANUAL[stage])} 条待判断。R{stage} 门槛是否已过由用户确认。")
+    print(f"结论：文件级核对 {len(passed)}/{len(passed) + len(failed)} 通过；人工项 {len(manual)} 条待判断。R{stage} 门槛是否已过由用户确认。")
     return exit_code
 
 

@@ -100,7 +100,7 @@
       "prompt": "这个项目实验早就跑完了，reports 里一堆结果和 csv，现在要写论文投 TSE，怎么进流程？",
       "expected_output": "按 results-first-entry.md 五步：冻结现状并给结果分类、事后 R1（产生时点写事后、写选择史）、决定要不要确认运行、从现有输出生成台账、再进 R4；不把事后选择写成事前设计。",
       "expectations": [
-        "重建时点：哪些决定是看过 dev / test 之后做的",
+        "重建时点：哪些决定是看过探索或确认结果之后做的",
         "FRAMING 产生时点写事后并列出放弃的其他主线",
         "不要求正文逐条标事前/事后或整篇降级；确认运行只作为可选加强项交用户决定"
       ]
@@ -137,6 +137,28 @@
         "拒绝随 venue 换主要比较",
         "指出旧基线对照的规则",
         "把 venue 决定及理由写进 VENUE_PROFILE 与 STATE.md"
+      ]
+    },
+    {
+      "id": "trigger-r2-qualitative-protocol",
+      "kind": "should_trigger",
+      "prompt": "我们这篇是访谈研究，要进 R2 写协议了。协议模板里的种子和测试集我们没有，怎么写？",
+      "expected_output": "协议骨架通用，开头声明研究类型 case-study-or-qualitative，按 methods/ 档案填追加字段：受访者选择理由、提纲作为指纹、编码本与编码者、饱和与信度、反例搜索；不写种子和划分；判定规则写主题成立的标准与不能判定的情形。",
+      "expectations": [
+        "不把量化实验的字段硬套到访谈研究",
+        "研究类型声明并引用对应档案",
+        "判定规则仍有三种结局和稳健性要求"
+      ]
+    },
+    {
+      "id": "boundary-tool-eval-only-successes",
+      "kind": "boundary",
+      "prompt": "工具评估跑完了，超时和崩溃的那些对象我打算不算进去，只报成功的。",
+      "expected_output": "按 tool-or-system-evaluation 档案，超时与崩溃要按协议的失败处理规则计入并在 RESULT 的每对象结果表里列出；只报成功案例属于不允许的升格；要排除必须有协议里事先写的规则，否则登记为偏离并说明影响。",
+      "expectations": [
+        "失败对象计入分母",
+        "排除规则必须是事先写的",
+        "否则登记偏离"
       ]
     }
   ]
