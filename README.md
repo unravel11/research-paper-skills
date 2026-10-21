@@ -58,7 +58,7 @@ python3 $P/scripts/init_paper_project.py ~/papers/my-paper --paper-id my-paper -
 python3 $P/scripts/check_gates.py ~/papers/my-paper                                          # 文件级门槛核对；退出码 1 表示有未过项，不是报错
 ```
 
-然后在论文项目里对 Claude 或 Codex 说"用 research-pipeline 判定阶段"。它读 STATE.md、跑 check_gates、报告阶段与下一步应调用的 skill，然后停下等你。实验已经做完的项目按 [results-first-entry.md](.claude/skills/research-pipeline/references/results-first-entry.md) 的五步进入，时点如实标注。已经有自己一套文件的老项目不用改名：`init_paper_project.py <目录> --state-only` 只建两份状态文件，在 STATE.md 的阶段产出索引里写 `默认路径 → 实际路径`，check_gates 就按索引找（写法见 [state-template.md](.claude/skills/research-pipeline/references/state-template.md)）。
+然后在论文项目里对 Claude 或 Codex 说"用 research-pipeline 判定阶段"。它读 STATE.md、跑 check_gates、报告阶段与下一步应调用的 skill，然后停下等你。新项目的下一步是 R0 的 `innovation-explore`：它设了 disable-model-invocation，模型不会代你进入，由你自己输入 `/innovation-explore`（Codex 里 `$innovation-explore`）触发。实验已经做完的项目按 [results-first-entry.md](.claude/skills/research-pipeline/references/results-first-entry.md) 的五步进入，时点如实标注。已经有自己一套文件的老项目不用改名：`init_paper_project.py <目录> --state-only` 只建两份状态文件，在 STATE.md 的阶段产出索引里写 `默认路径 → 实际路径`，check_gates 就按索引找（写法见 [state-template.md](.claude/skills/research-pipeline/references/state-template.md)）。
 
 在本仓库内直接打开 Claude Code，`.claude/skills/` 下的 skill 会被自动发现；其他项目用 `install.sh` 安装到用户级目录。
 
