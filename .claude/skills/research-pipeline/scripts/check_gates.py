@@ -67,8 +67,17 @@ HASH_ROW_RE = re.compile(r"^\|\s*`?([^|`\n]+?)`?\s*\|\s*([0-9a-f]{64})\s*\|", re
 STAGE_RE = re.compile(r"当前阶段[:：]\s*R(\d)")
 TOKEN_RE = re.compile(r"[㐀-䶿一-鿿豈-﫿]|[A-Za-z0-9]+")
 # One "默认路径 → 实际路径" pair inside the 阶段产出索引 section. Items are separated by
-# 、 ； ; or line breaks; an annotation in brackets after a path is not part of it.
-INDEX_PAIR_RE = re.compile(r"`?(?P<lhs>[^`、；;：:\s]+)`?[ \t]*(?:→|->|=>)[ \t]*`?(?P<rhs>[^`、；;\s（）()]+)`?")
+# 、 ； ; or line breaks; an annotation in brackets after a path (on either side) is not part of it.
+INDEX_PAIR_RE = re.compile(
+    r"`?(?P<lhs>[^`、；;：:\s（）()]+)`?(?:（[^）]*）|\([^)]*\))?[ \t]*(?:→|->|=>)[ \t]*`?(?P<rhs>[^`、；;\s（）()]+)`?"
+)
+
+# Reference templates whose ```markdown block is what authors copy; a section whose body still
+# equals the template's is unfilled even though every keyword is present.
+TEMPLATE_FILES = {
+    "protocol": Path(__file__).resolve().parents[1] / "references" / "experiment-protocol.md",
+    "result": Path(__file__).resolve().parents[1] / "references" / "experiment-run.md",
+}
 
 # Research-type profiles under references/methods/; the protocol declares one with "- 研究类型：<name>".
 METHOD_DIR = Path(__file__).resolve().parents[1] / "references" / "methods"
@@ -350,6 +359,69 @@ def md_sections(text: str) -> list[tuple[str, str]]:
     return sections
 
 
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+_template_cache: dict[str, dict[str, str]] = {}
+
+
+def template_sections(kind: str) -> dict[str, str]:
+    """Normalized section bodies of a reference template's ```markdown block, keyed by heading; empty if unavailable."""
+    if kind not in _template_cache:
+        sections: dict[str, str] = {}
+        path = TEMPLATE_FILES.get(kind)
+        if path is not None and path.is_file():
+            block = re.search(r"```markdown\n(.*?)```", read_text(path), re.S)
+            if block:
+                sections = {h: _norm(b) for h, b in md_sections(block.group(1)) if h}
+        _template_cache[kind] = sections
+    return _template_cache[kind]
+
+
+def section_filled(text: str, prefix: str, kind: str) -> bool | None:
+    """True when a '## <prefix>…' section exists and its body is neither empty nor the template's own text; None when there is no such heading."""
+    for heading, body in md_sections(text):
+        if heading.startswith(prefix):
+            norm = _norm(body)
+            if not norm:
+                return False
+            template = next((b for h, b in template_sections(kind).items() if h.startswith(prefix)), None)
+            return norm != template
+    return None
+
+
+def filled_check(name: str, text: str, prefix: str, kind: str, has_keywords: bool, missing: str) -> Check:
+    """Keyword presence plus a filled section; without the heading the keyword test alone decides, as before."""
+    if not has_keywords:
+        return Check(name, False, missing)
+    if section_filled(text, prefix, kind) is False:
+        return Check(name, False, f"“{prefix}”节为空或还是模板原文")
+    return Check(name, True, "有")
+
+
+def l3_recommendation(path: Path, text: str) -> str | None:
+    """The L3 recommendation a review file states, or None.
+
+    A JSON review record states it in ``recommendation``. In markdown or text the last line that
+    names exactly one recommendation counts; a line listing several (the report template's enum)
+    is ignored.
+    """
+    if path.suffix.lower() == ".json":
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            return None
+        value = data.get("recommendation") if isinstance(data, dict) else None
+        return value if value in L3_RECOMMENDATIONS else None
+    found = None
+    for line in text.splitlines():
+        tokens = [t for t in L3_RECOMMENDATIONS if t in line]
+        if len(tokens) == 1:
+            found = tokens[0]
+    return found
+
+
 # --- per-stage checks -------------------------------------------------------
 
 def checks_r0(root: Path, layout: Layout) -> list[Check]:
@@ -424,7 +496,7 @@ def checks_r1(root: Path, layout: Layout) -> list[Check]:
     if framing.exists():
         text = read_text(framing)
         missing = [h for h in FRAMING_HEADINGS if h not in text]
-        out.append(Check(f"{name} 必需小节", not missing, "缺少：" + "、".join(missing) if missing else "一句话主张 / 读者 / 研究问题 / 最强基线 / 不主张 齐全" + layout.note(key)))
+        out.append(Check(f"{name} 必需小节", not missing, "缺少：" + "、".join(missing) if missing else " / ".join(FRAMING_HEADINGS) + " 齐全" + layout.note(key)))
         out.extend(method_checks(text))
         rows = [line for line in text.splitlines() if re.match(r"\|\s*RQ\s*\d", line)]
         complete = [r for r in rows if len([c for c in r.strip().strip("|").split("|") if c.strip()]) >= 5]
@@ -583,23 +655,27 @@ def checks_r2(root: Path, layout: Layout) -> list[Check]:
     out.extend(method_checks(text))
     out.extend(framing_consistency(layout, text))
     out.append(Check("协议含指纹（SHA-256）", bool(SHA_RE.search(text)), "有" if SHA_RE.search(text) else "没有任何 64 位十六进制哈希"))
-    out.append(Check("协议含冻结记录", "冻结" in text, "有" if "冻结" in text else "未出现“冻结”"))
-    out.append(Check("协议含判定规则的三种结局", all(k in text for k in ("成立", "不成立", "不能判定")), "有" if all(k in text for k in ("成立", "不成立", "不能判定")) else "缺少“成立 / 不成立 / 不能判定”之一"))
-    neutral = "结果中性" in text
-    out.append(Check("协议含结果中性检查", neutral, "有" if neutral else "未出现“结果中性检查”"))
+    out.append(filled_check("协议含冻结记录", text, "执行与冻结", "protocol", "冻结" in text, "未出现“冻结”"))
+    out.append(filled_check("协议含判定规则的三种结局", text, "判定规则", "protocol", all(k in text for k in ("成立", "不成立", "不能判定")), "缺少“成立 / 不成立 / 不能判定”之一"))
+    out.append(filled_check("协议含结果中性检查", text, "结果中性检查", "protocol", "结果中性" in text, "未出现“结果中性检查”"))
     pilot_key = "experiments/PILOT_<date>.md"
     pilots = layout.files(pilot_key)
-    waived = re.search(r"试点[:：]\s*免做", text) is not None
+    # Only a list item that starts with the waiver counts: the checklist quotes the same phrase mid-line.
+    waived = re.search(r"^\s*-\s*试点[:：]\s*免做", text, re.M) is not None
+    # The reason has to sit on the same line as the waiver; the template mentions 理由 elsewhere.
+    waived_with_reason = re.search(r"^\s*-\s*试点[:：]\s*免做[，,、（(]\s*理由[:：]\s*\S", text, re.M) is not None
     if pilots:
         out.append(Check("试点已做", True, rel(root, pilots[-1]) + layout.note(pilot_key)))
     elif waived:
-        out.append(Check("试点免做并写了理由", "理由" in text, "协议写明免做" if "理由" in text else "写了免做但没有理由"))
+        out.append(Check("试点免做并写了理由", waived_with_reason, "协议写明免做与理由" if waived_with_reason else "写了免做但同一行没有“理由：”"))
     else:
         out.append(Check("试点已做或写明免做理由", False, f"没有 {layout.label(pilot_key)}，协议里也没有“试点：免做，理由：”"))
     unchecked = len(re.findall(r"^\s*-\s*\[ \]", text, re.M))
     checked = len(re.findall(r"^\s*-\s*\[[xX]\]", text, re.M))
     if unchecked + checked:
         out.append(Check("冻结前检查单全部勾选", unchecked == 0, f"{checked}/{checked + unchecked} 已勾选"))
+    else:
+        out.append(Check("冻结前检查单全部勾选", False, "协议里没有检查单；把 experiment-protocol.md 的冻结前检查单（通用项 + 档案追加项）复制进协议并逐项勾选"))
     for match in HASH_ROW_RE.finditer(text):
         path_text, expected = match.group(1).strip(), match.group(2)
         if path_text.lower() in {"路径", "path", "file", "文件"}:
@@ -621,12 +697,12 @@ def checks_r3(root: Path, layout: Layout) -> list[Check]:
         result = results[-1]
         text = read_text(result)
         out.append(Check(rel(root, result), True, "存在（取最近修改）" + layout.note(key)))
-        out.append(Check("RESULT.md 含判定", "判定" in text, "有" if "判定" in text else "未出现“判定”"))
+        out.append(filled_check("RESULT.md 含判定", text, "判定", "result", "判定" in text, "未出现“判定”"))
         post_hoc = "事后分析" in text or "post hoc" in text.lower()
-        out.append(Check("RESULT.md 含事后分析节", post_hoc, "有" if post_hoc else "未出现“事后分析 / post hoc”"))
+        out.append(filled_check("RESULT.md 含事后分析节", text, "事后分析", "result", post_hoc, "未出现“事后分析 / post hoc”"))
         hashed = "哈希" in text or "指纹" in text or bool(SHA_RE.search(text))
-        out.append(Check("RESULT.md 含指纹核对", hashed, "有" if hashed else "未出现指纹 / 哈希核对"))
-        out.append(Check("RESULT.md 含偏离登记", "偏离" in text, "有" if "偏离" in text else "未出现“偏离登记”（无偏离也要写“无”）"))
+        out.append(filled_check("RESULT.md 含指纹核对", text, "协议与指纹核对", "result", hashed, "未出现指纹 / 哈希核对"))
+        out.append(filled_check("RESULT.md 含偏离登记", text, "偏离登记", "result", "偏离" in text, "未出现“偏离登记”（无偏离也要写“无”）"))
     else:
         out.append(Check(layout.label(key), False, layout.missing(key)))
 
@@ -638,13 +714,20 @@ def checks_r3(root: Path, layout: Layout) -> list[Check]:
         if not files:
             out.append(Check(layout.label(key), False, layout.missing(key, "也接受 .json / .md")))
             continue
-        path = files[0]
-        try:
-            rows = load_rows(path)
-        except Exception as exc:  # noqa: BLE001 - report any parse failure
-            out.append(Check(f"{rel(root, path)} 可解析", False, str(exc)[:80]))
+        # Several candidates (e.g. the empty skeleton .csv beside a filled .json): take the first with rows.
+        path, rows, parsed = files[0], [], False
+        for candidate in files:
+            try:
+                candidate_rows = load_rows(candidate)
+            except Exception as exc:  # noqa: BLE001 - report any parse failure
+                out.append(Check(f"{rel(root, candidate)} 可解析", False, str(exc)[:80]))
+                continue
+            if not parsed or (not rows and candidate_rows):
+                path, rows, parsed = candidate, candidate_rows, True
+        if not parsed:
             continue
-        out.append(Check(f"{rel(root, path)} 有数据行", len(rows) > 0, f"{len(rows)} 行" + layout.note(key)))
+        several = f"；{len(files)} 个候选文件，取有数据行的" if len(files) > 1 else ""
+        out.append(Check(f"{rel(root, path)} 有数据行", len(rows) > 0, f"{len(rows)} 行" + layout.note(key) + several))
         if rows:
             values = status_values(rows)
             bad = sorted({v for v in values if v not in allowed})
@@ -736,17 +819,17 @@ def checks_r5(root: Path, layout: Layout) -> list[Check]:
         for path in review.rglob("*"):
             if not path.is_file() or path.suffix.lower() not in {".md", ".json", ".txt"}:
                 continue
-            text = read_text(path)
-            for token in L3_RECOMMENDATIONS:
-                if token in text:
-                    stamp = path.stat().st_mtime
-                    if latest is None or stamp > latest[0]:
-                        latest = (stamp, token, rel(root, path))
+            token = l3_recommendation(path, read_text(path))
+            if token is None:
+                continue
+            stamp = path.stat().st_mtime
+            if latest is None or stamp > latest[0]:
+                latest = (stamp, token, rel(root, path))
         if latest:
             go = latest[1].startswith("GO")
             out.append(Check("最新评审结论为 GO 类", go, f"{latest[1]}（{latest[2]}）"))
         else:
-            out.append(Check("评审记录含 L3 结论", False, "未找到 GO / NO_GO / ABSTAIN 结论"))
+            out.append(Check("评审记录含 L3 结论", False, "未找到只写一个结论的“推荐：”行或 REVIEW-RECORD 的 recommendation（GO / NO_GO / ABSTAIN）"))
     stage = orchestrator_stage(root, layout, out)
     if stage is not None:
         out.append(Check("orchestrator 阶段 = S7_SUBMISSION_READY", stage == "S7_SUBMISSION_READY", stage))

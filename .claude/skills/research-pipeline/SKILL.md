@@ -18,7 +18,7 @@ Claude 与 Codex 共用同一份 `research/STATE.md` 和 `PROGRESS.md`，读同�
 | R2 试点与实验协议 | 先小规模试做判分支和阈值，再按研究类型档案冻结确认协议 | `experiments/PILOT_<date>.md`（可免）、`experiments/PROTOCOL_<date>.md` + 指纹表 | 研究类型与 FRAMING 一致；试做已做并写回潜力卡与骨架，或写明免做理由；判定规则含三种结局与稳健性要求；结果中性检查已写；协议覆盖 venue 候选的 essential 属性并集；检查单全部勾选；用户确认冻结 | [pilot-protocol.md](references/pilot-protocol.md)、[experiment-protocol.md](references/experiment-protocol.md)、[methods/](references/methods/README.md) |
 | R3 实验执行与结算 | 按协议做，结果进台账，按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/*`、骨架结算节、归档的 R1 骨架、VENUE_PROFILE 的决定 | 每个 RQ 有判定且稳健性要求满足；偏离与事后分析已登记；台账齐全且关键结论有复核者；选定分支、归档 R1 版本、写下 venue 决定 | [experiment-run.md](references/experiment-run.md)、[when-results-disappoint.md](references/when-results-disappoint.md) + 项目自己的执行方式 |
 | R4 写作 | 先图后文，按选定分支写 | `paper/FIGURE_PLAN.md`、`.paper-style/`、`paper/manuscript/`、`paper/state.json` | orchestrator 到 S5；S2 追加图表计划 + 风格合同 + 结算核对；编译干净；症状清单全否；每个数字可追到台账 | `paper-style-profiler` → `publication-chart-skill` / `scientific-visualization` → `paper-writing-orchestrator`（内部调用 `paper-storytelling`、`academic-humanizer`） |
-| R5 评审与投稿 | 分级评审、修订、artifact、投稿材料 | `paper/review/`、artifact、S6–S7 | L3 结论为 GO 或 GO_AFTER_TARGETED_REVISIONS 且修订已做；artifact 可验证；作者字段齐全 | `paper-review`（按 VENUE_PROFILE 加载 venue 档案）、`academic-humanizer`、orchestrator S6–S7 |
+| R5 评审与投稿 | 分级评审、修订、artifact、投稿材料 | `paper/review/`、artifact、S6–S7 | L3 结论为 GO_INTERNAL_REVIEW 或 GO_AFTER_TARGETED_REVISIONS 且修订已做；artifact 可验证；作者字段齐全 | `paper-review`（按 VENUE_PROFILE 加载 venue 档案）、`academic-humanizer`、orchestrator S6–S7 |
 
 门槛细则见 [stage-gates.md](references/stage-gates.md)；R 阶段与 orchestrator S0–S7 怎样衔接、什么时候回退，见 [orchestrator-mapping.md](references/orchestrator-mapping.md)；venue 怎样影响协议而不影响结论，见 [venue-and-evidence-standards.md](references/venue-and-evidence-standards.md)。辅助 skill：`paper-reading` 在任何阶段做文献精读（R0 期间只用 `innovation-explore` 规定的压缩格式）。
 
@@ -39,7 +39,7 @@ Claude 与 Codex 共用同一份 `research/STATE.md` 和 `PROGRESS.md`，读同�
    python3 <skill_dir>/scripts/check_gates.py <项目目录>        # 加 --json 给脚本读；--stage R2 指定阶段
    ```
 
-   脚本只回答"文件在不在、格式对不对、哈希一不一致、状态值合不合同"；文件存在不等于门槛已过。退出码 0 是文件级全部通过，1 是有未过项，2 是读不到 STATE.md 且没给 `--stage`；非零不是脚本出错。任何一条不满足就报告"R<n> 门槛未过：<条目>"，不往下走。脚本报"缺失"而文件其实在别处时，先把路径登记进索引再跑，不要把"缺失"当成要回退。
+   脚本只回答"文件在不在、格式对不对、哈希一不一致、状态值合不合同"；文件存在不等于门槛已过。退出码 0 是文件级全部通过，1 是有未过项，2 是读不到 STATE.md 且没给 `--stage`、`当前阶段` 行解析不出 R<n>，或 `--stage` 不在 R0–R5；非零不是脚本出错。任何一条不满足就报告"R<n> 门槛未过：<条目>"，不往下走。脚本报"缺失"而文件其实在别处时，先把路径登记进索引再跑，不要把"缺失"当成要回退。
 3. **路由**：告诉用户当前应调用哪个 skill、做哪一件事、为什么，然后停下。用户说"继续 / 进入 R<n>"才进入该阶段的 skill。R0 的 `innovation-explore` 设了 disable-model-invocation，模型不能代为调用，只能请用户自己输入 `/innovation-explore`。
 4. **记录**：阶段切换、阻塞、授权变化、会话结束时更新 `research/STATE.md`（核对时间、阶段、证据位置、剩余条件、下一步、待用户决定项、阶段历史）与 `PROGRESS.md`（任务行、交接记录）。规则见 [state-template.md](references/state-template.md)。
 5. **回退**：后一阶段发现前一阶段的问题（写作时发现主张站不住、运行与协议不一致、评审给出 FATAL_CLAIM_GAP），明确写"回退到 R<n>，原因"，回到那个阶段的 skill 重做，不在当前阶段里打补丁。规则见 orchestrator-mapping.md 的"回退规则"。
