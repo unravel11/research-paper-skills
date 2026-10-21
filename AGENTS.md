@@ -1,6 +1,6 @@
 # research-paper-skills（Codex 入口）
 
-本仓库是一套论文工作流 skill。先读 README.md 与 CONTEXT.md。Claude Code 读 CLAUDE.md，它指向本文件，两边是同一份约定。
+本仓库是一套论文工作流 skill。先读 README.zh-CN.md（英文版是 README.md）与 CONTEXT.md。Claude Code 读 CLAUDE.md，它指向本文件，两边是同一份约定。
 
 ## 研究阶段锁
 
