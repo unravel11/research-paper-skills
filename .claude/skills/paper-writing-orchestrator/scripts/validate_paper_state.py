@@ -194,8 +194,12 @@ def validate_state(data: Any) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    usage = "Usage: validate_paper_state.py <state.json>"
+    if len(argv) == 2 and argv[1] in ("-h", "--help"):
+        print(usage)
+        return 0
     if len(argv) != 2:
-        print("Usage: validate_paper_state.py <state.json>", file=sys.stderr)
+        print(usage, file=sys.stderr)
         return 2
 
     path = Path(argv[1])

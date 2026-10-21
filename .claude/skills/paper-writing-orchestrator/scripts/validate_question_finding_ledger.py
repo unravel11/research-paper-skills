@@ -286,8 +286,12 @@ def validate_ledger(data: Any) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    usage = "Usage: validate_question_finding_ledger.py <ledger.json>"
+    if len(argv) == 2 and argv[1] in ("-h", "--help"):
+        print(usage)
+        return 0
     if len(argv) != 2:
-        print("Usage: validate_question_finding_ledger.py <ledger.json>", file=sys.stderr)
+        print(usage, file=sys.stderr)
         return 2
     path = Path(argv[1])
     try:

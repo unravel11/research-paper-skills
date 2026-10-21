@@ -14,13 +14,13 @@ Required top-level fields:
 - `skill`: `paper-style-profiler`
 - `status`
 - `generated_at`: UTC ISO-8601 string
-- `repository`: object containing relative root marker `.`, authority label, branch, HEAD, target venue, and research genre when known
-- `target`: object with relative manuscript paths and SHA-256 values
+- `repository`: object whose `root` must be exactly `"."` (the validator rejects any other value); also record authority label, branch, HEAD, target venue, and research genre when known
+- `target`: object with `paths` (a list of unique repository-relative manuscript paths) and `hashes` (a dict mapping each of those paths to its lowercase SHA-256); the validator requires the two key sets to be identical
 - `anchors`: three to five objects for a complete profile
 - `artifacts`: relative bundle filenames
 - `refresh_conditions`: recorded stale checks
 
-Each anchor contains `id`, `relative_path`, `sha256`, `title`, `primary_role`, `selection_score`, and `selection_basis`. Use stable IDs such as `A1`; hashes must be lowercase SHA-256.
+Each anchor contains `id`, `relative_path`, `sha256`, `title`, `primary_role`, `selection_score`, and `selection_basis`. Use stable IDs such as `A1`; hashes must be lowercase SHA-256. The optional `secondary_roles` list, when present, is read by the validator and must use the same role vocabulary as `primary_role` (`empirical-results`, `method-mechanism`, `discussion-boundaries`, `introduction-framing`, `artifact-reproducibility`, `venue-register`); it counts toward role coverage. `artifacts` keys are `inventory`, `selection`, `profile`, `contract`, `metrics`, and `target_audit`, each mapped to its fixed filename.
 
 Allowed lifecycle statuses:
 

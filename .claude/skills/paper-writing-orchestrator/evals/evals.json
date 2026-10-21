@@ -307,7 +307,7 @@
     },
     {
       "id": 30,
-      "prompt": "帮我把 RARE 和企业合作那篇写进 job talk，标题想用 Building Inclusive and Reliable Foundation Models。",
+      "prompt": "帮我把我的方法论文和企业合作那篇写进 job talk，标题想用一个覆盖整个研究议程的大标题。",
       "expected_output": "The orchestrator separates agenda from results in the talk, anchors each agenda claim to covered evidence, and states the candidate's own role in collaborative work.",
       "expectations": [
         "Allows a broad agenda framed as questions",

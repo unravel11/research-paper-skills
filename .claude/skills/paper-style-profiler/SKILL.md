@@ -52,7 +52,7 @@ Record the authority, target, venue/genre, scientific claim ceiling, and applica
 
 ### P1 — Freeze the candidate inventory
 
-Use scoped repository search (`rg --files` first) and avoid dependencies, caches, generated builds, virtual environments, raw datasets, and unrelated archives. The helper `scripts/inventory_papers.py` may inventory PDFs and derive hashes and extraction-quality signals without retaining source text.
+Use scoped repository search (`rg --files` first) and avoid dependencies, caches, generated builds, virtual environments, raw datasets, and unrelated archives. The helper `scripts/inventory_papers.py` may inventory PDFs and derive hashes and extraction-quality signals without retaining source text. Invoke it as `python3 scripts/inventory_papers.py <repo-root> --scope <relative-dir> --output <bundle>/CORPUS-INVENTORY.json` (`--scope` is repeatable; add `--include-ignored` to walk Git-ignored paths). It discovers `.pdf` files only, and its page counts and text-quality signals rely on the optional `poppler-utils` binaries `pdfinfo` and `pdftotext`; when they are absent the extraction fields degrade to `tool_unavailable` rather than failing.
 
 Classify candidates as one of:
 
@@ -76,7 +76,7 @@ A high total score does not override a claim-ceiling conflict. Record every sele
 
 ### P3 — Extract the language layer
 
-Convert selected PDFs to temporary plain text with a deterministic extractor. Hash the original PDFs, note extraction coverage, and exclude references from measurement where feasible. The helper `scripts/profile_language.py` produces quote-free descriptive metrics; it does not replace close reading.
+Convert selected PDFs to temporary plain text with a deterministic extractor. Hash the original PDFs, note extraction coverage, and exclude references from measurement where feasible. The helper `scripts/profile_language.py` produces quote-free descriptive metrics; it does not replace close reading. Invoke it as `python3 scripts/profile_language.py --paper A1=<tmp>/a1.txt --paper A2=<tmp>/a2.txt ... [--target T=<tmp>/target.txt] --output <bundle>/metrics.json`, where each `--paper` names a selected anchor ID and its temporary plain-text path (for example from `pdftotext`, which is optional `poppler-utils` software).
 
 Extract the dimensions in `references/language-profile.md`, including:
 

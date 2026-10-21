@@ -118,13 +118,18 @@ judgment, not a validator result.
 
 For a short task, use this table:
 
-| Question ID | Origin | Evidence IDs | Data | Finding | Bounded implication | Competing explanations | Anomaly status/lineage | Answerability | Authorization | Protocol | Execution | Claim impact | Manuscript disposition | Stop condition |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Question ID | Origin | Evidence IDs | Data | Finding | Bounded implication | Competing explanations | Literature position/timing | Anomaly status/lineage | Answerability | Authorization | Protocol | Execution | Claim impact | Manuscript disposition | Stop condition |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 For a long-running workflow, use a machine-readable JSON object with
-`schema_version`, `paper_id`, and `questions`. Each question record uses the
-same fields in snake case plus `literature_position` and `literature_timing`.
-Validate it with:
+`schema_version`, `paper_id`, and `questions`. The field names and allowed
+values of each question record are tabulated under "Optional question-finding
+ledger" in `state-and-ledger-contracts.md`; they are not a one-to-one
+snake-case copy of the table above: `Data` is `data_statement`, `Literature
+position/timing` splits into `literature_position` and `literature_timing`,
+`Anomaly status/lineage` splits into `anomaly_status` and `lineage_note`,
+`Answerability` is `answerability_disposition`, and `Authorization`,
+`Protocol`, and `Execution` carry a `_status` suffix. Validate it with:
 
 ```bash
 python3 <skill-dir>/scripts/validate_question_finding_ledger.py <ledger.json>

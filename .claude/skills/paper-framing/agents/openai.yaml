@@ -1,4 +1,4 @@
 interface:
   display_name: "论文 Framing 与实验思考"
-  short_description: "从实验结果提炼研究问题、竞争解释、贡献边界、读者价值与论文大纲"
-  default_prompt: "使用 $paper-framing，基于现有实验和文献梳理论文主线、贡献、证据缺口与大纲，先不运行新实验。"
+  short_description: "R1 实验前定主张、读者、RQ、判定规则与最强基线，产出 paper/FRAMING.md；也支持事后 framing 与贡献简报"
+  default_prompt: "使用 $paper-framing，在实验之前定下主张、读者、RQ、判定规则和最强基线，写成 paper/FRAMING.md；实验已做完的项目走事后模式，先不运行新实验。"

@@ -173,6 +173,9 @@ def validate_record(payload: dict[str, Any], artifact_root: Path) -> dict[str, A
                     all_clear = False
                     continue
                 if scores[field] < threshold:
+                    errors.append(
+                        f"{reviewer_id}: {field} {scores[field]:g} is below threshold {threshold:g}"
+                    )
                     all_clear = False
             hard_failures = reviewer.get("hard_gate_failures")
             required_changes = reviewer.get("required_changes")

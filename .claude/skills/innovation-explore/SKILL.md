@@ -40,12 +40,12 @@ find <目录> -iname '*.pdf' | sort       # 文件名通常带年份与引用键
 
 ```bash
 python3 <skill_dir>/scripts/zotero_list.py --collection "<集合名>"   # 或 --search "<关键词>"，不传参数列出全部集合
-python3 <skill_dir>/scripts/zotero_import.py <项目目录>               # 只在用户要求把 PDF 导入 Zotero 时使用
+python3 <skill_dir>/scripts/zotero_import.py <文献目录>               # 只在用户要求把 PDF 导入 Zotero 时使用；传项目根目录只列出候选文献目录，不导入
 ```
 
 导入片段需要**用户本人**在 Zotero → 工具 → 开发者 → Run JavaScript 中运行；不要替用户运行。
 
-得到条目及 PDF 路径后，交给子代理阅读（Claude 用 `sonnet-worker`，Codex 用低成本子代理或按 AGENTS.md 规则）。每篇只回传固定 4 行，禁止长摘要：
+得到条目及 PDF 路径后，交给低成本子代理阅读（Claude Code 用内置子代理并选较小的模型，Codex 用低成本子代理或按 AGENTS.md 规则）。每篇只回传固定 4 行，禁止长摘要：
 
 ```
 [编号] 作者 年 · 标题

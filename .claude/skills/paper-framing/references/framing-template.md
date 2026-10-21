@@ -8,7 +8,7 @@ R1 的产出文件。每一项都要能指向依据（文献键、台账证据 I
 - 论文 ID：
 - 产生时点：事前 / 事后（事后时写明看过哪些结果之后写的）
 - 版本：R1 初版 / 试点后修订 / 结算后修订（旧版本：）
-- 研究类型：<research-pipeline 的 methods/ 档案名，按 methods/README.md 的适用表选；两种时主在前、次在后，用、分隔>
+- 研究类型：<research-pipeline 的 methods/ 档案文件名去掉 .md，如 quantitative-experiment；按 methods/README.md 的适用表选；两种时主在前、次在后，用、分隔>
 - venue 候选：见 paper/VENUE_PROFILE.md
 
 ## 贡献简报（两分钟版；模板与规则见 contribution-brief.md）
@@ -74,6 +74,9 @@ R1 的产出文件。每一项都要能指向依据（文献键、台账证据 I
 ## 论证链与最弱一环
 -
 
+## 论文大纲
+- <一节一行：这一节回答读者的哪个问题、承担什么论证角色、用哪些证据；段落级的展开留给 paper-storytelling 的骨架>
+
 ## 待用户决定
 -
 ```
@@ -88,5 +91,5 @@ R1 的产出文件。每一项都要能指向依据（文献键、台账证据 I
 - 结果中性检查一列写清：阴性结果要被当作发现，需要哪些前提成立（阳性对照、数据质量、操作检查）；缺了它，阴性只能写"不能判定"。
 - 潜力卡的档位是前瞻判断，和评审 skill 对已有证据给的档位分开标注；试点后重评一次。
 - 一句话主张会被 `paper-storytelling` 的删除测试检验：删掉它章节顺序不变，说明主张还没抓到。
-- 研究类型在这里选定：七份档案（受控实验与基准评测、测量研究、工具或系统评估、案例与定性、以人为参与者的实验、形式化与理论、复现）的适用范围见 research-pipeline 的 methods/README.md；它决定判定规则与稳健性怎么写、R2 协议填哪份档案的追加字段、R5 的 L2 按哪节审。R2 的试点与协议继承这一行，改类型要在协议里写理由并修订本文件。
+- 研究类型在这里选定：七份档案（受控实验与基准评测 `quantitative-experiment`、测量研究 `measurement-study`、工具或系统评估 `tool-or-system-evaluation`、案例与定性 `case-study-or-qualitative`、以人为参与者的实验 `human-subjects-experiment`、形式化与理论 `formal-or-theoretical`、复现 `replication`）的适用范围见 research-pipeline 的 methods/README.md；它决定判定规则与稳健性怎么写、R2 协议填哪份档案的追加字段、R5 的 L2 按哪节审。R2 的试点与协议继承这一行，改类型要在协议里写理由并修订本文件。
 - 本文件被 R2 的协议直接引用；协议冻结后要改主张，走回退，不在协议里悄悄换比较。
