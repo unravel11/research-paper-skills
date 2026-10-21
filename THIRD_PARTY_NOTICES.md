@@ -16,7 +16,7 @@
 - 目录：`.claude/skills/scientific-visualization/`
 - 上游：[K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills)，路径 `skills/scientific-visualization`，提交 `48dc1cf173f01aea114a62d634066f6b272aaaf1`
 - 许可：MIT，见上游仓库根目录的 `LICENSE.md`
-- `scientific-visualization` 相对上游 `48dc1cf1` 的改动：头部版本 1.1 改 1.2，`compatibility` 字段移到正文末尾的 Environment compatibility 段；新增一条规则，不按 ours / proposed / baseline 这类方法角色分配好坏颜色；新增 Exact labels 一条；新增 `references/real_world_patterns.md`（三个有边界的实践模式，附来源与不得复制的声明）并在正文引用；新增 `evals/evals.json`（8 个用例）。
+- `scientific-visualization` 相对上游 `48dc1cf1` 的改动：头部版本 1.1 改 1.2，`compatibility` 字段移到 Pinned snapshot 一节开头的 Environment compatibility 段；新增一条规则，不按 ours / proposed / baseline 这类方法角色分配好坏颜色；新增 Exact labels 一条；新增 `references/real_world_patterns.md`（三个有边界的实践模式，附来源与不得复制的声明）并在正文引用；新增 `evals/evals.json`（8 个用例）。
 
 ```
 MIT License
@@ -109,7 +109,7 @@ SOFTWARE.
 - 目录：`.claude/skills/academic-humanizer/`、`.claude/skills/task-forest/`、`.claude/skills/session-handoff-prompt/`
 - 上游：[dongshuyan/compass-skills](https://github.com/dongshuyan/compass-skills)，路径 `skills/<同名>`，提交 `1b2e556ce6f293ba12e95e18d51995d6a969d52f`
 - 许可：MIT，见上游仓库根目录的 `LICENSE`
-- `task-forest` 与 `session-handoff-prompt` 未改动。`academic-humanizer` 相对上游有以下改动：description 加了中文触发短语；SKILL.md 加了"每个 reference 每次任务只读一遍"和"先读 `references/user-writing-defaults.md`"两段，并把 `references/examples.md` 改为按需读取（examples.md 开头说明同步改）；新增 `references/user-writing-defaults.md`（学术写作默认语气）；`scripts/metrics.py` 的候选输出多了一个 `status` 字段。
+- `task-forest` 与 `session-handoff-prompt` 未改动。`academic-humanizer` 相对上游有以下改动：description 加了中文触发短语；SKILL.md 加了"每个 reference 每次任务只读一遍"和"先读 `references/user-writing-defaults.md`"两段，并把 `references/examples.md` 改为按需读取（examples.md 开头说明同步改）；新增 `references/user-writing-defaults.md`（学术写作默认语气）。
 
 ```
 MIT License
@@ -137,4 +137,4 @@ SOFTWARE.
 
 ## 只引用、未随附的 skill
 
-`paper-writing-orchestrator` 的路由表还提到几个不在本仓库里的 skill：`$pdf` 是 Anthropic 的文档 skill，按 Anthropic 自己的许可分发，不在这里转载；`$jupyter-notebook`、`$academic-paper-ppt`、`$review-paper` 是可选路由；`task-forest` 提到的 `$task-clarifier` 是 compass-skills 里的另一个 skill，也未随附。没有安装时对应的路由跳过。
+`paper-writing-orchestrator` 的路由表还提到几个不在本仓库里的 skill：`$pdf` 是 Anthropic 的文档 skill，按 Anthropic 自己的许可分发，不在这里转载；`$jupyter-notebook`、`$academic-paper-ppt`、`$review-paper`、`$Spreadsheets` 是可选路由；`task-forest` 提到的 `$task-clarifier` 是 compass-skills 里的另一个 skill，也未随附。没有安装时对应的路由跳过。

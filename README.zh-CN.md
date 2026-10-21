@@ -240,4 +240,4 @@ agent 在本仓库工作时遵守的约定写在 [AGENTS.md](AGENTS.md)；Claude
 | `drawio-skill` | [Agents365-ai/drawio-skill](https://github.com/Agents365-ai/drawio-skill) |
 | `academic-humanizer`、`task-forest`、`session-handoff-prompt` | [dongshuyan/compass-skills](https://github.com/dongshuyan/compass-skills) |
 
-路由表里提到但没有随附的 skill（`$pdf`、`$jupyter-notebook`、`$academic-paper-ppt`、`$review-paper`）需要自行安装；没装时，对应的路由会跳过。
+路由表里提到但没有随附的 skill（`$pdf`、`$jupyter-notebook`、`$academic-paper-ppt`、`$review-paper`、`$Spreadsheets`）需要自行安装；没装时，对应的路由会跳过。
