@@ -1,6 +1,8 @@
-# paperforge
+# research-paper-skills
 
-一套从确定方向到投稿的论文产出工作流，以 skill 的形式组织，Claude Code 与 Codex 共用同一份。
+中文 | [English](README.en.md)
+
+分阶段、带门槛的科研论文 skill，Claude Code 与 Codex 共用同一份：把一篇论文从确定方向一路带到投稿，先定主线再做实验，不跳阶段。
 新会话（本地或云端）先读 [CONTEXT.md](CONTEXT.md)：它记录这套流程为什么这样设计、哪些取舍是有意的、哪些事还没定。
 
 ## 流程
@@ -87,7 +89,7 @@ python3 $P/scripts/check_gates.py ~/papers/my-paper                             
 
 ## 维护
 
-- 改完 skill 运行 `python3 scripts/validate_skills.py`：检查每个 SKILL.md 的头部、相对链接是否指到存在的文件、有没有私人路径、evals.json 能否解析。
+- 改完 skill 运行 `python3 scripts/validate_skills.py`：检查每个 SKILL.md 的头部、相对链接是否指到存在的文件、有没有私人路径、evals.json 能否解析。CI（[validate.yml](.github/workflows/validate.yml)）在每次 push 与 PR 时跑它，并冒烟测试项目脚本和 `install.sh`。
 - 语言按用途分：要用户拍板的 skill 用中文，操作英文稿件或包第三方工具的用英文；每个 description 同时带中英文触发短语。规则在 [AGENTS.md](AGENTS.md)。
 - 评审只有 `paper-review` 一个 skill，新 venue 按 [venues/README.md](.claude/skills/paper-review/references/venues/README.md) 的模板加一份档案即可。
 - 第三方 skill 以上游锁定提交为基线，已有的小改逐条列在 THIRD_PARTY_NOTICES.md，不再新增改动；锁定的版本记在 [external-skill-locks.md](.claude/skills/paper-writing-orchestrator/references/external-skill-locks.md)。

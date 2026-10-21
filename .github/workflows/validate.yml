@@ -1,0 +1,52 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate skills
+        run: python3 scripts/validate_skills.py
+
+      - name: Compile scripts
+        run: python3 -m compileall -q scripts .claude/skills
+
+      - name: Smoke test project scripts
+        run: |
+          set -euo pipefail
+          P=.claude/skills/research-pipeline/scripts
+          W="$RUNNER_TEMP/paper"
+          python3 "$P/init_paper_project.py" "$W/full" --paper-id demo --venue UNDECIDED
+          python3 "$P/init_paper_project.py" "$W/legacy" --paper-id demo --state-only
+          for d in full legacy; do
+            # Exit 1 means open gate items, which is expected on a fresh skeleton.
+            rc=0
+            python3 "$P/check_gates.py" --json "$W/$d" > "$W/$d.json" || rc=$?
+            if [ "$rc" -gt 1 ]; then exit "$rc"; fi
+            python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$W/$d.json"
+          done
+          python3 "$P/hash_files.py" --help > /dev/null
+
+      - name: Smoke test session-handoff-prompt
+        run: python3 .claude/skills/session-handoff-prompt/scripts/smoke_test_handoff.py
+
+      - name: Smoke test install.sh
+        run: |
+          set -euo pipefail
+          export HOME="$RUNNER_TEMP/home"
+          ./install.sh
+          ./install.sh --force
+          n=$(find "$HOME/.claude/skills" -mindepth 1 -maxdepth 1 -type l | wc -l)
+          test "$n" -eq "$(ls -d .claude/skills/*/ | wc -l)"
