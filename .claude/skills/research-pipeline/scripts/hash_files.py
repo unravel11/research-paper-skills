@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Print SHA-256 hashes as the markdown table used by the R2 protocol.
 
-The protocol's 运行与冻结 section records every training, evaluation and
+The protocol's 执行与冻结 section records every training, evaluation and
 analysis script as ``| path | sha256 |`` rows. ``check_gates.py`` re-reads
 rows of that shape and compares them with the working tree, so paths are
 printed relative to ``--base`` (default: the current directory, which should

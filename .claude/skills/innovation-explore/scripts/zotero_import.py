@@ -278,9 +278,23 @@ def main():
         f.write(js)
     print(f"\n导入片段：{out}")
     if not a.no_copy:
-        subprocess.run(["pbcopy"], input=js.encode("utf-8"), check=False)
-        print("已复制到剪贴板。")
+        if copy_to_clipboard(js):
+            print("已复制到剪贴板。")
+        else:
+            print("没有可用的剪贴板命令，请手动复制上面的文件内容。")
     print("下一步：打开 Zotero → 工具 → 开发者 → Run JavaScript → 勾选 Run as async function → 粘贴 → Run")
+
+
+def copy_to_clipboard(text: str) -> bool:
+    """Copy with the platform's clipboard command; False when none is available."""
+    commands = {"darwin": [["pbcopy"]], "win32": [["clip"]]}.get(sys.platform, [["wl-copy"], ["xclip", "-selection", "clipboard"], ["xsel", "--clipboard", "--input"]])
+    for cmd in commands:
+        try:
+            subprocess.run(cmd, input=text.encode("utf-8"), check=True)
+            return True
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+    return False
 
 
 if __name__ == "__main__":

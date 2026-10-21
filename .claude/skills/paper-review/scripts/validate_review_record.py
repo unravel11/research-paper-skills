@@ -53,7 +53,9 @@ FRAMING_SELECTIONS = {"A", "B", "NO_CREDIBLE_FRAMING", "ABSTAIN"}
 L1_GATES = {f"L1-G{i}" for i in range(10)}
 L2_GATES = {f"L2-G{i}" for i in range(10)}
 L3_GATES = {f"L3-G{i}" for i in range(10)}
-VENUE_GATE_RE = re.compile(r"^[A-Z][A-Z0-9]*(?:-L[123])?-G\d+$")
+# An id starting with L1-/L2-/L3- is a core-gate namespace and is never a venue gate,
+# so an out-of-range core id such as L1-G10 is rejected instead of passing as a venue gate.
+VENUE_GATE_RE = re.compile(r"^(?!L[123]-)[A-Z][A-Z0-9]*(?:-L[123])?-G\d+$")
 
 FORBIDDEN_KEYS = {
     "acceptance_probability",
@@ -319,6 +321,10 @@ def run_self_test() -> int:
     bad_l2["review_level"] = "L2"
     errors_bad_l2 = validate(bad_l2)
 
+    bad_core_range = json.loads(json.dumps(valid_l1))
+    bad_core_range["gate_results"].append({"id": "L1-G10", "status": "PASS", "evidence": ["x"], "impact": "y"})
+    errors_bad_core_range = validate(bad_core_range)
+
     checks = {
         "valid_l1": not errors_l1,
         "valid_l3": not errors_l3,
@@ -327,6 +333,7 @@ def run_self_test() -> int:
         "rejects_non_official_source_and_missing_recommendation": any("not under a declared official prefix" in e for e in errors_bad_l3)
         and any("L3 recommendation" in e for e in errors_bad_l3),
         "rejects_l2_without_l2_gates": any("missing required gates for L2" in e for e in errors_bad_l2),
+        "rejects_out_of_range_core_gate": any("'L1-G10' is neither a core gate" in e for e in errors_bad_core_range),
     }
     passed = all(checks.values())
     print(json.dumps({"self_test": "PASS" if passed else "FAIL", "checks": checks, "valid_l1_errors": errors_l1, "valid_l3_errors": errors_l3}, ensure_ascii=False, indent=2))

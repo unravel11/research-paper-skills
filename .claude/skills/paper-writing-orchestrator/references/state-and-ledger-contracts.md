@@ -25,10 +25,13 @@ workflow state. They are optional for a focused one-turn revision.
 
 ## Evidence ledger
 
-| Evidence ID | Source | Status | Protocol/population | What it supports | What it cannot support | Validation |
-|---|---|---|---|---|---|---|
+| Evidence ID | Source | Status | Protocol/population | What it supports | What it cannot support | Validation | Run ID | Output file |
+|---|---|---|---|---|---|---|---|---|
 
-Allowed status values are `VERIFIED_CURRENT`, `CONTROLLED_OR_RETROSPECTIVE`,
+`Run ID` names the `reports/<run>/` directory the evidence came from; `Output
+file` is the file under `reports/<run>/outputs/` that every number quoted in
+prose traces back to. The CSV in `paper/ledger/evidence_inventory.csv` carries
+the same columns in snake case. Allowed status values are `VERIFIED_CURRENT`, `CONTROLLED_OR_RETROSPECTIVE`,
 `EXPLORATORY_OR_CANDIDATE`, `SUPERSEDED_OR_INVALID`, and
 `MISSING_OR_UNRESOLVED`.
 
@@ -62,6 +65,32 @@ For long-running work, store the ledger as JSON and run:
 ```bash
 python3 <skill-dir>/scripts/validate_question_finding_ledger.py <ledger.json>
 ```
+
+The JSON object carries `schema_version` (the string `"1"`), `paper_id`, and a
+non-empty `questions` list. Each question record has exactly these fields; the
+validator rejects an unknown enum value and a missing nullable field:
+
+| Field | Type | Allowed values | Meaning |
+|---|---|---|---|
+| `question_id` | string | non-empty, unique | row key |
+| `question` | string | non-empty | the question as stated |
+| `origin` | enum | `AUTHOR_DEFINED`, `LITERATURE_DERIVED`, `FINDING_DERIVED`, `REVIEWER_CHALLENGE` | where the question came from |
+| `evidence_ids` | list of strings | evidence ledger IDs | admissible evidence the answer rests on |
+| `data_statement` | string or null | free text | the observed data (the `Data` column) |
+| `finding` | string or null | free text | the finding those data directly support |
+| `bounded_implication` | string or null | free text | at most one bounded implication |
+| `competing_explanations` | list of strings | free text | plausible alternative explanations |
+| `literature_position` | enum | `CONFIRM`, `CONTRADICT`, `REFINE`, `EXTEND`, `REFRAME`, `UNRESOLVED` | how the literature positions the finding; any value but `UNRESOLVED` needs a checked timing |
+| `literature_timing` | enum | `PRE_PROTOCOL`, `POST_FINDING_CONTEXT`, `BOTH`, `NOT_CHECKED` | when the literature checkpoint happened |
+| `anomaly_status` | enum | `NOT_ANOMALOUS`, `SUSPECTED_TECHNICAL_DEFECT`, `NONREPRODUCIBLE_OR_UNRESOLVED`, `REPRODUCIBLE_ANOMALY` | anomaly triage class |
+| `lineage_note` | string or null | free text; required when anomalous | lineage of the old and any corrected run |
+| `answerability_disposition` | enum | the six answerability values above | the one safe disposition chosen |
+| `authorization_status` | enum | `NOT_REQUIRED_EXISTING_EVIDENCE`, `NOT_REQUESTED`, `PROPOSED`, `AUTHORIZED`, `REJECTED`, `NOT_APPLICABLE` | user authorization for proposed work |
+| `protocol_status` | enum | `FROZEN`, `PROPOSED_NOT_FROZEN`, `NOT_APPLICABLE`, `UNRESOLVED` | outcome-independent protocol state |
+| `execution_status` | enum | `NOT_APPLICABLE`, `NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`, `FAILED`, `INVALIDATED` | state of the authorized work |
+| `claim_impact` | enum | `NO_CHANGE`, `SUPPORT_IF_VALIDATED`, `WEAKEN`, `REMOVE`, `REOPEN_S1`, `REOPEN_S2`, `UNRESOLVED` | effect on the claim ledger |
+| `manuscript_disposition` | enum | `RESULTS`, `DISCUSSION`, `LIMITATION`, `FUTURE_STUDY`, `DO_NOT_CLAIM`, `REDESIGN_REQUIRED`, `PENDING` | where the statement is routed |
+| `stop_condition` | string or null | free text; required for a proposal | when the proposed work stops |
 
 In `Allowed strength`, an evaluative adjective that summarizes a quantity
 cites that quantity and its comparison, for example `modest overhead (+8.7%
@@ -128,7 +157,13 @@ change alters a claim, reopen the appropriate upstream gate.
 
 Run `scripts/validate_paper_state.py` after editing this JSON. Validation checks
 shape and stage consistency; it does not verify that the referenced science is
-true or that paths refer to current artifacts.
+true or that paths refer to current artifacts. From the stage named below
+onward, the validator requires these `artifacts.*` keys to be non-empty
+strings (earlier stages may leave them null): `S1` `evidence_ledger` and
+`claim_ledger`; `S2` `paper_plan`; `S3` `manuscript`; `S4` `integrity_report`;
+`S5` `venue_review`; `S6` `final_pdf` and `artifact_validation`; `S7`
+`submission_readiness`. `question_finding_ledger` is optional at every stage
+and may stay null.
 
 ## Rebuttal promise ledger
 

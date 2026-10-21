@@ -1,0 +1,61 @@
+{
+  "skill_name": "paper-reading",
+  "evals": [
+    {
+      "id": "trigger-single-pdf-full-report",
+      "kind": "should_trigger",
+      "prompt": "精读 papers/paper-A.pdf，讲清楚它的问题、方法和实验，写成一份完整的解析报告。",
+      "expected_output": "Full paper analysis report for one PDF: evidence level stated (全文 PDF), problem chain, mechanism chain with module inputs/outputs, evidence chain mapping each experiment to the claim it tests, explicit missing-evidence paragraphs where formulas or ablations are absent, limitations, reuse value, and review questions, written as connected prose with tables only for comparison.",
+      "expectations": [
+        "Evidence level is declared before analysis",
+        "Each major section has explanatory paragraphs, not one-line fragments",
+        "No invented datasets, baselines, numbers, or citations",
+        "Missing evidence is stated explicitly instead of skipped"
+      ]
+    },
+    {
+      "id": "trigger-compare-several-papers",
+      "kind": "should_trigger",
+      "prompt": "解析这三篇 PDF（paper-A、paper-B、paper-C）并比较，它们之间是什么关系，我该按什么顺序读。",
+      "expected_output": "Multi-paper mode: a full analysis for each paper plus the comparison table (problem definition, method route, core assumption, evidence, limitation, use for the user's work), the relationships among them (same problem different method, extension, mutual challenge, etc.), and a closing reading route.",
+      "expectations": [
+        "Does not summarize each paper independently and stop",
+        "Comparison matrix and relationship analysis are present",
+        "Ends with a reading route",
+        "Closed-access or abstract-only items are marked rather than hidden"
+      ]
+    },
+    {
+      "id": "trigger-review-style-comments",
+      "kind": "should_trigger",
+      "prompt": "用审稿人的视角评价 paper-B 的主张和证据是否对得上，给我可以写进审稿意见的问题。",
+      "expected_output": "Review-style analysis focused on claim-evidence alignment: each major claim mapped to its supporting experiment or marked as unsupported, conclusion strength bounded by the reported scope, and concrete reviewer questions.",
+      "expectations": [
+        "Claims are mapped to specific evidence",
+        "No SOTA or 显著提升 language without reported values",
+        "Review questions are specific to the paper"
+      ]
+    },
+    {
+      "id": "no-trigger-paragraph-polish",
+      "kind": "should_not_trigger",
+      "prompt": "帮我把这一段 Related Work 的英文润色一下，不改意思。",
+      "expected_output": "This is prose revision of the user's own manuscript, not paper reading; route to academic-humanizer or paper-style-profiler.",
+      "expectations": [
+        "Does not start a paper analysis report",
+        "Does not critique the cited papers"
+      ]
+    },
+    {
+      "id": "no-trigger-three-bullet-summary",
+      "kind": "should_not_trigger",
+      "prompt": "给我 paper-A 的 3 条要点总结就行，不用展开。",
+      "expected_output": "The skill explicitly rejects brief bullet summaries and generic short notes; the user explicitly asked for a short answer, so answer briefly without the full report workflow, and offer the complete analysis report if deeper reading is wanted.",
+      "expectations": [
+        "Does not produce the full analysis report",
+        "Does not pad the three bullets into a fake report",
+        "Any claim in the bullets still stays within the available source"
+      ]
+    }
+  ]
+}

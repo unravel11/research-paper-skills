@@ -24,8 +24,8 @@ copyright lines and license texts.
 
 Referenced but not bundled: `$pdf` (Anthropic's document skill, distributed
 under Anthropic's own license, so it is not redistributed here), and the
-optional `$jupyter-notebook`, `$academic-paper-ppt` and `$review-paper`
-routes. Without them the corresponding route is skipped.
+optional `$jupyter-notebook`, `$Spreadsheets`, `$academic-paper-ppt` and
+`$review-paper` routes. Without them the corresponding route is skipped.
 
 The table route uses `pubtab`. Version `1.0.1` passed the isolated smoke test on
 2026-08-19. Treat its package version and executable availability as a runtime

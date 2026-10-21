@@ -5,9 +5,9 @@ Opens the database read-only in immutable mode so it works while Zotero is runni
 
 Usage:
   zotero_list.py                       # list collections with item counts
-  zotero_list.py --collection "EA"     # items in a collection (recursive)
-  zotero_list.py --search "authorization"   # title/abstract substring match
-  zotero_list.py --collection "EA" --json   # machine-readable output
+  zotero_list.py --collection "my-paper"   # items in a collection (recursive)
+  zotero_list.py --search "flaky"          # title/abstract substring match
+  zotero_list.py --collection "my-paper" --json   # machine-readable output
 """
 import argparse
 import json

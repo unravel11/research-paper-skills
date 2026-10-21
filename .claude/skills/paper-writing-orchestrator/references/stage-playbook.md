@@ -22,7 +22,9 @@ Required evidence:
 - target paper line or authoritative version;
 - applicable repository instructions;
 - branch, HEAD, and worktree status for repository-backed work;
-- target venue or an explicit `UNDECIDED` value.
+- target venue, or an explicit undecided value recorded in the state file as
+  `target_venue.name: "UNDECIDED"` with `target_venue.family: "undecided"`
+  (the name must be non-empty; the family is lowercase).
 
 Stop when two manuscript versions compete, the requested file is generated or
 archived, or authority cannot be established.
@@ -66,7 +68,10 @@ Required evidence:
   use), including the distinct question and manuscript role of each planned
   artifact or panel, one conclusion sentence per artifact, and Figure 1
   decided first;
-- a style contract from `$paper-style-profiler` whose bundle validator passes;
+- a style contract from `$paper-style-profiler`: the `.paper-style/` bundle
+  with `WRITING-CONTRACT.md` and `STYLE-STATE.json`, its bundle validator
+  passing, and a `STYLE-STATE.json` status of `PROFILE_SAVED`,
+  `TARGET_AUDITED`, or `STYLE_APPLIED`;
 - a spine settlement check against the ledger: the branch chosen in
   `paper/STORY_SPINE.md` after R3 is the one the evidence supports, the
   evidence its turning point relies on is still `VERIFIED_CURRENT`, claim
@@ -143,7 +148,8 @@ An automated scan can support this gate but cannot establish it alone.
 
 ## S5 Venue reviewed
 
-Use `$paper-review` at the level appropriate to the current manuscript state;
+Use `$paper-review` at the level appropriate to the current manuscript state,
+at least L1 at first entry;
 it loads the venue profile (one file per venue under its
 `references/venues/`) and falls back to its generic rubric for an unprofiled
 venue. For a security venue without a profile, also read

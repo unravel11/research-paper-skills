@@ -240,4 +240,4 @@ The bundled third-party skills are MIT-licensed by their authors. Copyright noti
 | `drawio-skill` | [Agents365-ai/drawio-skill](https://github.com/Agents365-ai/drawio-skill) |
 | `academic-humanizer`, `task-forest`, `session-handoff-prompt` | [dongshuyan/compass-skills](https://github.com/dongshuyan/compass-skills) |
 
-Skills that are referenced in routing tables but not bundled (`$pdf`, `$jupyter-notebook`, `$academic-paper-ppt`, `$review-paper`) must be installed separately. Without them, the corresponding route is skipped.
+Skills that are referenced in routing tables but not bundled (`$pdf`, `$jupyter-notebook`, `$academic-paper-ppt`, `$review-paper`, `$Spreadsheets`) must be installed separately. Without them, the corresponding route is skipped.

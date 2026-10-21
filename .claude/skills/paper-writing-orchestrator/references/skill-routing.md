@@ -16,7 +16,7 @@ skills actually available in the current environment before routing.
 | Create, convert, preview, or audit a publication table | Table branch of `$publication-chart-skill` (`pubtab`) | Every displayed value must map to a source; keep the table as editable text |
 | Draft or minimally revise academic prose | `$academic-humanizer` | Claims and terminology must already be grounded |
 | Assess framing, evidence chain, experiments, or submission readiness for the target venue (graded L1/L2/L3) | `$paper-review` with the venue profile named in `paper/VENUE_PROFILE.md` | Read-only unless edits are explicitly requested; an unprofiled venue uses its generic rubric |
-| Review a security paper | Installed venue-specific skill, else `security-venue-review.md` | Do not substitute an economics referee rubric |
+| Review a security paper | `$paper-review` with the venue profile from `paper/VENUE_PROFILE.md`; when the venue has no profile under its `references/venues/`, also read `security-venue-review.md` as a supplement | Do not substitute an economics referee rubric |
 | Inspect final PDF layout | `$pdf` | Visual/mechanical QA only |
 | Create or refactor a requested notebook | `$jupyter-notebook` | Do not force notebooks on ordinary plotting work |
 | Create a requested XLSX/CSV workbook | `$Spreadsheets` | Spreadsheet artifact, not a LaTeX paper table by default |

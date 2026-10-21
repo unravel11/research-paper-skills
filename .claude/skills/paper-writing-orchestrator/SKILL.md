@@ -104,7 +104,9 @@ and R5. Do not re-derive what an earlier R stage already decided:
   reader value, and narrative order. Locking `S2` additionally requires three
   items: a figure and table plan (`paper/FIGURE_PLAN.md`, one conclusion
   sentence per artifact, Figure 1 decided first), a style contract (the
-  `$paper-style-profiler` bundle with its validator passing), and a spine
+  `$paper-style-profiler` bundle at `.paper-style/` with `WRITING-CONTRACT.md`
+  and `STYLE-STATE.json`, its validator passing and the `STYLE-STATE.json`
+  status one of `PROFILE_SAVED`, `TARGET_AUDITED`, or `STYLE_APPLIED`), and a spine
   settlement check (the branch chosen in `paper/STORY_SPINE.md` after R3
   matches the ledger: the evidence its turning point relies on is still
   `VERIFIED_CURRENT`, claim strength does not exceed the ledger, section order
@@ -186,10 +188,11 @@ the current environment.
   evidence chain, L3 pre-submission) of any target venue; it loads the venue
   profile named in `paper/VENUE_PROFILE.md` (one file per venue under its
   `references/venues/`) and falls back to its generic rubric otherwise.
-- For security venues, follow
-  [security venue review](references/security-venue-review.md) or a more
-  specific installed security-paper review skill. Do not use an economics
-  referee workflow.
+- For a security venue, still use `$paper-review` with the venue profile from
+  `paper/VENUE_PROFILE.md`; when that venue has no profile under its
+  `references/venues/`, also read
+  [security venue review](references/security-venue-review.md) as a
+  supplement. Do not use an economics referee workflow.
 - Use `$pdf` when final rendering or PDF layout matters.
 - Use `$jupyter-notebook` only when the requested deliverable or reproducibility
   workflow genuinely needs a notebook.

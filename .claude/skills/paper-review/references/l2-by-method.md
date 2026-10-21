@@ -2,24 +2,13 @@
 
 L2 的十道门对所有研究通用，问的是同一件事：从对象到结论这条证据链有没有断点。每种研究类型断点长得不一样，所以每门在不同类型里要问的具体问题不同。先确定研究类型，再按对应小节审；门的编号、状态值和处置表不变。
 
-**研究类型从哪来。** 优先读 `experiments/PROTOCOL_*.md` 第一行的 `- 研究类型：`；没有协议就读 `paper/FRAMING.md` 开头的 `- 研究类型：`（R1 选定，R2 协议继承）；都没有就问用户。类型名以 `research-pipeline/references/methods/` 的档案名为准（quantitative-experiment、measurement-study、tool-or-system-evaluation、case-study-or-qualitative、human-subjects-experiment、formal-or-theoretical、replication），一篇论文用到两种就两节都审。没有声明且问不到时，按通用问法审，并在报告里写"研究类型未声明"，L2-G0 至多 `PARTIAL`。
+**研究类型从哪来。** 优先读 `experiments/PROTOCOL_*.md` 标题下第一条 `- 研究类型：`；没有协议就读 `paper/FRAMING.md` 开头的 `- 研究类型：`（R1 选定，R2 协议继承）；都没有就问用户。类型名以 `research-pipeline/references/methods/` 的档案名为准（quantitative-experiment、measurement-study、tool-or-system-evaluation、case-study-or-qualitative、human-subjects-experiment、formal-or-theoretical、replication），一篇论文用到两种就两节都审。没有声明且问不到时，按通用问法审，并在报告里写"研究类型未声明"，L2-G0 至多 `PARTIAL`。
 
 **记录。** `REVIEW-RECORD.json` 的 `target.research_type` 写档案名；每门的"直接证据"栏引用本节问题对应的材料。
 
 ## 通用十门
 
-| Gate | 核心问题 |
-|---|---|
-| L2-G0 协议冻结与偏离 | 协议或分析计划在接触确认性结果之前冻结；偏离登记了日期、理由、谁决定、影响；为找结果而改的地方是否披露并与确认性结果分开 |
-| L2-G1 对象、样本与分母 | 研究对象或数据从哪来、怎么选、分母是什么；排除、缺失、失败、未决案例能否重建；便利样本不支撑总体结论 |
-| L2-G2 真值、度量与标注 | 结论依赖的"真"从哪来，是否独立于被评的对象；度量测的是不是要测的东西；标注过程、标注者独立性、分歧与信度可见 |
-| L2-G3 隔离与泄漏 | 探索与确认是否隔离；做决定前分析者看过什么；结果信息有没有泄回对象选择、配置或假设 |
-| L2-G4 分析单位与配对 | 在哪一层比较、在哪一层重复；重复是不是独立的（伪重复）；同池比较与端到端比较分开 |
-| L2-G5 过程受控 | 影响结果的过程（调参、编码本版本、访谈者行为、工具配置、证明假设的变更）是否受控并有记录 |
-| L2-G6 对照、替代方案与消融 | 对照或替代方案公平且不是稻草人；竞争解释被排除；消融或反例与所声称的机制对应 |
-| L2-G7 判定、统计与不确定性 | 判定按协议规则得出；区间与变异而不只是点估计；多重比较；定性的饱和与信度；没有设计支撑不用因果或总体语言 |
-| L2-G8 稳健性与外部效度 | 敏感性、失败案例、配置或情境边界是否报告；结论限定在观察到的范围 |
-| L2-G9 复现链、材料与披露 | 关键数字可从材料重建；脚本、材料、版本有指纹；数据与材料的可得性和限制写明；伦理、披露与科学结论分开 |
+十门的编号与核心问题以 [review-rubric.md](review-rubric.md) 第 3 节的表为唯一来源，本文不再复制；下面各节只写每门在该研究类型里具体审什么。
 
 ## quantitative-experiment：受控实验与基准评测
 
