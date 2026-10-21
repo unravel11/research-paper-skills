@@ -1,103 +1,243 @@
+<div align="center">
+
 # research-paper-skills
 
-中文 | [English](README.en.md)
+**Stage-gated skills for Claude Code & Codex that take a research paper from idea to submission.**<br/>
+Thesis before experiments. No skipped stages. The story never changes the evidence.
 
-分阶段、带门槛的科研论文 skill，Claude Code 与 Codex 共用同一份：把一篇论文从确定方向一路带到投稿，先定主线再做实验，不跳阶段。
-新会话（本地或云端）先读 [CONTEXT.md](CONTEXT.md)：它记录这套流程为什么这样设计、哪些取舍是有意的、哪些事还没定。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![validate](https://github.com/unravel11/research-paper-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/unravel11/research-paper-skills/actions/workflows/validate.yml)
+[![Skills](https://img.shields.io/badge/skills-14-blue.svg)](#whats-inside)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-8A2BE2.svg)](#install)
+[![Codex](https://img.shields.io/badge/Codex-supported-111111.svg)](#install)
 
-## 流程
+English | [中文](README.zh-CN.md)
 
-入口是 `research-pipeline`。它判定阶段、核对门槛、把工作路由到对应阶段的 skill，并维护论文项目内的 `research/STATE.md` 与 `PROGRESS.md`。每个阶段结束停下等用户判断；后一阶段发现前一阶段的问题就明确回退，不打补丁。
+</div>
+
+---
+
+Most papers that struggle in review don't have a data problem. They have a process problem: the main comparison was chosen after the test results came in, the draft reads like a lab report instead of a story, and the central result has no figure. These skills turn the whole path, from choosing a direction to submitting, into six gated stages. Each stage produces files, a script checks the gate, and the agent stops for your judgment before moving on.
+
+## Contents
+
+- [How it works](#how-it-works)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Try it](#try-it)
+- [What's inside](#whats-inside)
+- [Ground rules](#ground-rules)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License and credits](#license-and-credits)
+
+## How it works
 
 ```mermaid
 flowchart LR
-  R0["R0 方向<br/>innovation-explore"] --> R1["R1 主线与故事<br/>paper-framing → paper-storytelling<br/>(建议 L1 评审)"]
-  R1 --> R2["R2 试点与协议<br/>pilot → experiment-protocol"]
-  R2 --> R3["R3 实验执行与结算<br/>experiment-run + 选分支、定 venue"]
-  R3 --> R4["R4 写作<br/>style-profiler → 图表 → orchestrator S0–S5"]
-  R4 --> R5["R5 评审与投稿<br/>paper-review L2→L3 · humanizer · S6–S7"]
-  R4 -. 主张站不住 .-> R1
+  R0["R0 Direction<br/>innovation-explore"] --> R1["R1 Thesis and story<br/>paper-framing → paper-storytelling<br/>(L1 review suggested)"]
+  R1 --> R2["R2 Pilot and protocol<br/>pilot → experiment-protocol"]
+  R2 --> R3["R3 Run and settle<br/>experiment-run + pick branch and venue"]
+  R3 --> R4["R4 Writing<br/>style-profiler → figures → orchestrator S0–S5"]
+  R4 --> R5["R5 Review and submission<br/>paper-review L2→L3 · humanizer · S6–S7"]
+  R4 -. claim does not hold .-> R1
   R5 -. FATAL_CLAIM_GAP .-> R1
 ```
 
-| 阶段 | 目标 | 产出 | skill |
+`research-pipeline` is the single entry point. It determines the current stage from the files on disk (never from the conversation), checks the gate, routes the work to the right skill, and keeps `research/STATE.md` and `PROGRESS.md` up to date.
+
+1. **R0 Direction**: `innovation-explore` ranks two or three directions worth doing. It has a topic entry, which transfers ideas from the literature, and an anomaly entry, which rules out artifacts before treating an odd observation as a phenomenon. You trigger it yourself.
+2. **R1 Thesis and story**: `paper-framing` fixes the claim, reader, RQs, decision rules and the strongest baseline *before any experiment*. `paper-storytelling` then writes a story spine with two branches, one for "it holds" and one for "it doesn't".
+3. **R2 Pilot and protocol**: run a small pilot, then freeze a protocol with decision rules for all three outcomes, robustness requirements and result-neutral checks. Seven research-type profiles cover controlled experiments, measurement studies, tool evaluations, qualitative work, human-subject studies, formal work and replications.
+4. **R3 Run and settle**: run per protocol, build the evidence ledger, log deviations, then pick the story branch and the venue from the ledger.
+5. **R4 Writing**: style anchors and figures come first, then `paper-writing-orchestrator` drafts the body against the spine.
+6. **R5 Review and submission**: `paper-review` runs graded L2 → L3 reviews against a venue profile, followed by fact-preserving revision and the submission package.
+
+When a later stage exposes a problem from an earlier one, the pipeline rolls back explicitly instead of patching it in the prose.
+
+<details>
+<summary><b>Stage gates and outputs</b></summary>
+
+| Stage | Goal | Outputs | Skill |
 |---|---|---|---|
-| R0 方向 | 选出 2–3 个值得做、条件允许的方向并排序；主题入口读文献迁移，异常入口先排伪像再刻画现象 | `docs/innovation-log.md`（每个方向一张四问潜力卡） | `innovation-explore` |
-| R1 主线与故事 | 实验前选定研究类型，定主张、读者、RQ、判定规则、最强基线、潜力卡与 venue 候选；写带分支的故事骨架 | `paper/FRAMING.md`、`paper/STORY_SPINE.md`、`paper/VENUE_PROFILE.md` | `paper-framing` → `paper-storytelling`（→ `paper-review` 的 L1 前瞻用法） |
-| R2 试点与实验协议 | 先小规模试做定阈值与分支，再按研究类型档案冻结协议：对象与数据、比较或分析、三种结局的判定规则、稳健性要求、结果中性检查、指纹、授权 | `experiments/PILOT_<date>.md`、`experiments/PROTOCOL_<date>.md` | `research-pipeline/references/pilot-protocol.md`、`experiment-protocol.md`、`methods/` 七种研究类型档案 |
-| R3 实验执行与结算 | 按协议做，生成 RESULT.md 与台账，登记偏离；按台账选定故事分支与 venue | `reports/<run>/RESULT.md`、`paper/ledger/`、骨架结算与归档 | `research-pipeline/references/experiment-run.md`、`when-results-disappoint.md` + 项目自己的执行方式 |
-| R4 写作 | 先风格锚点与图表，再按骨架写正文 | `paper/FIGURE_PLAN.md`、`.paper-style/`、`paper/manuscript/`、`paper/state.json` | `paper-style-profiler` → `publication-chart-skill` / `scientific-visualization` → `paper-writing-orchestrator`（内部用 `paper-storytelling`、`academic-humanizer`） |
-| R5 评审与投稿 | 分级评审、修订、artifact、投稿材料 | `paper/review/`、artifact | `paper-review`（按 venue 档案）、`academic-humanizer`、orchestrator S6–S7 |
+| R0 Direction | Pick and rank 2–3 directions worth doing and feasible | `docs/innovation-log.md` (one four-question potential card per direction) | `innovation-explore` |
+| R1 Thesis and story | Choose the research type; fix claim, reader, RQs, decision rules, strongest baseline, potential card, venue candidates; write a branched story spine | `paper/FRAMING.md`, `paper/STORY_SPINE.md`, `paper/VENUE_PROFILE.md` | `paper-framing` → `paper-storytelling` (→ forward-looking L1 `paper-review`) |
+| R2 Pilot and protocol | Pilot to set thresholds and branches, then freeze objects and data, comparison or analysis, decision rules for three outcomes, robustness, result-neutral checks, fingerprints, authorization | `experiments/PILOT_<date>.md`, `experiments/PROTOCOL_<date>.md` | `research-pipeline` references: `pilot-protocol.md`, `experiment-protocol.md`, `methods/` |
+| R3 Run and settle | Run per protocol, write RESULT.md and the ledger, log deviations; pick the story branch and venue | `reports/<run>/RESULT.md`, `paper/ledger/`, settled spine | `experiment-run.md`, `when-results-disappoint.md` + your own execution setup |
+| R4 Writing | Style anchors and figures first, then the body following the spine | `paper/FIGURE_PLAN.md`, `.paper-style/`, `paper/manuscript/`, `paper/state.json` | `paper-style-profiler` → `publication-chart-skill` / `scientific-visualization` → `paper-writing-orchestrator` |
+| R5 Review and submission | Graded review, revision, artifact, submission package | `paper/review/`, artifact | `paper-review`, `academic-humanizer`, orchestrator S6–S7 |
 
-R 阶段与 orchestrator 的 S0–S7 怎样衔接（S1 继承 R3 的台账；S2 继承 FRAMING 与骨架，并追加图表计划、风格合同、骨架复核），见 [orchestrator-mapping.md](.claude/skills/research-pipeline/references/orchestrator-mapping.md)。辅助 skill：`paper-reading`（文献精读报告）。
+How the R stages map onto the orchestrator's S0–S7 is in [orchestrator-mapping.md](.claude/skills/research-pipeline/references/orchestrator-mapping.md).
 
-## 一篇论文项目里的文件
+</details>
+
+<details>
+<summary><b>Files in a paper project</b></summary>
 
 ```
-research/STATE.md               唯一阶段状态（Claude 与 Codex 共用）
-PROGRESS.md                     任务表与交接
+research/STATE.md               the single stage state (shared by Claude and Codex)
+PROGRESS.md                     task table and handoff
 docs/innovation-log.md          R0
 paper/FRAMING.md                R1
-paper/STORY_SPINE.md            R1（带成立 / 不成立分支），R3 后结算；R1 版本归档为 STORY_SPINE_R1_<date>.md
-paper/VENUE_PROFILE.md          R1 列候选，R3 后定
-experiments/PILOT_<date>.md     R2a 试点（exploratory，可免）
-experiments/PROTOCOL_<date>.md  R2b 确认协议，冻结后只追加补充协议
+paper/STORY_SPINE.md            R1 (holds / does-not-hold branches), settled after R3
+paper/VENUE_PROFILE.md          candidates in R1, decided after R3
+experiments/PILOT_<date>.md     R2a pilot (exploratory, may be waived)
+experiments/PROTOCOL_<date>.md  R2b confirmatory protocol; frozen, only addenda appended
 reports/<run>/RESULT.md         R3
-paper/ledger/                   R3 生成，R4 只继承
-paper/FIGURE_PLAN.md            R4，先图后文
-.paper-style/                   R4 风格合同
+paper/ledger/                   produced in R3, only inherited in R4
+paper/FIGURE_PLAN.md            R4, figures before text
+.paper-style/                   R4 style contract
 paper/manuscript/               R4
 paper/state.json                orchestrator S0–S7
 paper/review/                   R5
 ```
 
-## 快速开始
+</details>
+
+## Install
 
 ```bash
-./install.sh            # 符号链接到 ~/.claude/skills 与 ~/.codex/skills；已有同名条目跳过，--force 替换旧符号链接，--copy 复制
-P=.claude/skills/research-pipeline
-python3 $P/scripts/init_paper_project.py ~/papers/my-paper --paper-id my-paper --venue UNDECIDED   # 建项目骨架，不覆盖已有文件
-python3 $P/scripts/check_gates.py ~/papers/my-paper                                          # 文件级门槛核对；退出码 1 表示有未过项，不是报错
+git clone https://github.com/unravel11/research-paper-skills.git
+cd research-paper-skills
+./install.sh
 ```
 
-然后在论文项目里对 Claude 或 Codex 说"用 research-pipeline 判定阶段"。它读 STATE.md、跑 check_gates、报告阶段与下一步应调用的 skill，然后停下等你。新项目的下一步是 R0 的 `innovation-explore`：它设了 disable-model-invocation，模型不会代你进入，由你自己输入 `/innovation-explore`（Codex 里 `$innovation-explore`）触发。实验已经做完的项目按 [results-first-entry.md](.claude/skills/research-pipeline/references/results-first-entry.md) 的五步进入，时点如实标注。已经有自己一套文件的老项目不用改名：`init_paper_project.py <目录> --state-only` 只建两份状态文件，在 STATE.md 的阶段产出索引里写 `默认路径 → 实际路径`，check_gates 就按索引找（写法见 [state-template.md](.claude/skills/research-pipeline/references/state-template.md)）。
+`install.sh` symlinks every skill into both `~/.claude/skills` (Claude Code) and `~/.codex/skills` (Codex). Existing entries are skipped. Pass `--force` to replace old symlinks, or `--copy` to copy instead of linking. Opening Claude Code inside this repository also discovers the skills under `.claude/skills/` directly.
 
-在本仓库内直接打开 Claude Code，`.claude/skills/` 下的 skill 会被自动发现；其他项目用 `install.sh` 安装到用户级目录。
+Requires Python 3 for the project scripts. `drawio-skill` additionally needs the draw.io desktop CLI.
 
-## skill 清单
+## Quick start
 
-| skill | 阶段 | 职责 | 语言 |
-|---|---|---|---|
-| `research-pipeline` | 总入口 | 判定阶段、核对门槛、路由、维护 STATE / PROGRESS；项目骨架与门槛核对脚本 | 中 |
-| `innovation-explore` | R0 | 阶段锁 + 渐进式披露的创新点探讨；主题入口与异常入口。设了 disable-model-invocation，由你自己输入 `/innovation-explore` 触发，模型不能代为调用 | 中 |
-| `paper-framing` | R1（也用于事后） | 主张、RQ、判定规则、最强基线、竞争解释、读者可见性 | 中 |
-| `paper-storytelling` | R1 / R4 | 故事骨架、引言六步、图一、RQ 回答框、实验报告症状清单 | 中 |
-| `paper-style-profiler` | R4 | 从仓库里的优秀论文提炼风格合同 | 英 |
-| `publication-chart-skill` | R4 | 图 / 表决策与 pubfig / pubtab 路线（第三方，有小改） | 英 |
-| `scientific-visualization` | R4 | 数据图的诚实编码、可达性、导出与审计（第三方，有小改） | 英 |
-| `paper-writing-orchestrator` | R4–R5 | 稿件 S0–S7 阶段门、台账合同、图表质量门、评审分流 | 英 |
-| `academic-humanizer` | R4–R5 | 保事实的学术文本修订（第三方，compass-skills，有小改） | 英（含中文规则） |
-| `drawio-skill` | R4 | 方法 / 架构 / 流程示意图，产出可编辑的 .drawio（第三方） | 英 |
-| `paper-review` | R1 的 L1 / R5 | 分级评审 L1–L3，venue 无关的核心加 venue 档案（不内置，按模板一个 venue 一个文件） | 中 |
-| `paper-reading` | 辅助 | 研究生级论文精读报告 | 英（报告结构中文） |
-| `task-forest` | 辅助 | 仓库内的任务 DAG 与会话收尾（第三方，compass-skills） | 英 |
-| `session-handoff-prompt` | 辅助 | 生成给新会话的续接 prompt（第三方，compass-skills） | 英 |
+```bash
+P=.claude/skills/research-pipeline/scripts
+python3 $P/init_paper_project.py ~/papers/my-paper --paper-id my-paper --venue UNDECIDED  # skeleton; never overwrites files
+python3 $P/check_gates.py ~/papers/my-paper                                              # exit code 1 = open gate items, not an error
+```
 
-## 固化进流程的规则
+Then, inside the paper project, ask your agent:
 
-先主线再实验；每种结局都要有去处（骨架分支 + 结果中性检查）；基线是当前最强版本；判定规则带稳健性要求；venue 只改读者与收获；台账在 R3 生成、R4 只继承；补做的分析分开记录、不升格为协议内结论；图表优先；故事不改证据；渐进式披露；授权只来自用户的具体决定；评审要看渲染后的 PDF。来由与完整条目见 [CONTEXT.md](CONTEXT.md)。
+> Use research-pipeline to determine the stage of this paper.
 
-## 维护
+It reads `STATE.md`, runs `check_gates`, reports the stage and the next skill, and stops. For a new project the next step is R0. Type `/innovation-explore` yourself (`$innovation-explore` in Codex). The skill sets `disable-model-invocation`, so the agent never enters it on its own.
 
-- 改完 skill 运行 `python3 scripts/validate_skills.py`：检查每个 SKILL.md 的头部、相对链接是否指到存在的文件、有没有私人路径、evals.json 能否解析。CI（[validate.yml](.github/workflows/validate.yml)）在每次 push 与 PR 时跑它，并冒烟测试项目脚本和 `install.sh`。
-- 语言按用途分：要用户拍板的 skill 用中文，操作英文稿件或包第三方工具的用英文；每个 description 同时带中英文触发短语。规则在 [AGENTS.md](AGENTS.md)。
-- 评审只有 `paper-review` 一个 skill，新 venue 按 [venues/README.md](.claude/skills/paper-review/references/venues/README.md) 的模板加一份档案即可。
-- 第三方 skill 以上游锁定提交为基线，已有的小改逐条列在 THIRD_PARTY_NOTICES.md，不再新增改动；锁定的版本记在 [external-skill-locks.md](.claude/skills/paper-writing-orchestrator/references/external-skill-locks.md)。
-- 新规则先写进 CONTEXT.md，再落到对应 SKILL.md；评估用例放在各 skill 的 `evals/evals.json`。
-- Codex 读 [AGENTS.md](AGENTS.md)，Claude Code 读 [CLAUDE.md](CLAUDE.md)，两者是同一份约定。全局指令的 "Research stage lock" 建议文本见 [docs/global-instructions-snippet.md](docs/global-instructions-snippet.md)。
+- **Experiments already done?** Enter through the five steps of [results-first-entry.md](.claude/skills/research-pipeline/references/results-first-entry.md). The timing is recorded truthfully.
+- **Existing project with its own layout?** Run `init_paper_project.py <dir> --state-only` and map `default path → actual path` in the stage output index of `STATE.md` (see [state-template.md](.claude/skills/research-pipeline/references/state-template.md)). Nothing gets renamed.
 
-## 许可
+## Try it
 
-- 本仓库自写的 skill、脚本与文档以 MIT 许可发布，见 [LICENSE](LICENSE)。
-- 随附的六个第三方 skill 各自以 MIT 发布：`scientific-visualization`（K-Dense Inc.）、`publication-chart-skill`（Gaorui Zhang）、`drawio-skill`（Agents365-ai）、`academic-humanizer`、`task-forest`、`session-handoff-prompt`（COMPASS Skills contributors）。版权声明、许可全文、锁定的上游提交，以及对 `scientific-visualization`、`publication-chart-skill`、`academic-humanizer` 的小改，都在 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-- 路由表里提到但未随附的 skill（`$pdf`、`$jupyter-notebook`、`$academic-paper-ppt`、`$review-paper`）需自行安装，没有安装时对应路由跳过。
+| You want to… | Say to the agent | Skill |
+|---|---|---|
+| Know where the paper stands | "Where is this paper? What's the next step?" | `research-pipeline` |
+| Find a direction | type `/innovation-explore` | `innovation-explore` |
+| Lock the thesis before experiments | "Define the thesis, RQs and decision rules before we run anything." | `paper-framing` |
+| Get a two-minute contribution summary | "What is this paper's main contribution, and what can't we claim?" | `paper-framing` |
+| Fix a draft that reads like a lab report | "The reviewers say it's incremental. Rework the story." | `paper-storytelling` |
+| Get a go / no-go before submitting | "Give this paper an L3 pre-submission review for TSE." | `paper-review` |
+| Make a paper-ready figure | "Turn these results into a publication-quality figure." | `scientific-visualization` |
+| Remove formulaic phrasing | "De-AI this abstract without changing any claim." | `academic-humanizer` |
+
+## What's inside
+
+**Pipeline and direction**
+
+| Skill | What it does | Lang |
+|---|---|---|
+| [`research-pipeline`](.claude/skills/research-pipeline/SKILL.md) | Entry point: determines the stage, checks gates, routes, maintains STATE / PROGRESS; ships the skeleton and gate-check scripts | zh |
+| [`innovation-explore`](.claude/skills/innovation-explore/SKILL.md) | R0: stage-locked, progressively disclosed search for directions; topic and anomaly entries; user-triggered only | zh |
+
+**Thesis and story**
+
+| Skill | What it does | Lang |
+|---|---|---|
+| [`paper-framing`](.claude/skills/paper-framing/SKILL.md) | Claim, RQs, decision rules, strongest baseline, competing explanations, reader value, contribution brief | zh |
+| [`paper-storytelling`](.claude/skills/paper-storytelling/SKILL.md) | Branched story spine, six-step introduction, Figure 1, RQ answer boxes, lab-report symptom checklist | zh |
+
+**Writing and figures**
+
+| Skill | What it does | Lang |
+|---|---|---|
+| [`paper-writing-orchestrator`](.claude/skills/paper-writing-orchestrator/SKILL.md) | Manuscript stages S0–S7, ledger contract, figure quality gate, review routing | en |
+| [`paper-style-profiler`](.claude/skills/paper-style-profiler/SKILL.md) | Extracts a style contract from strong published papers already in your repository | en |
+| [`scientific-visualization`](.claude/skills/scientific-visualization/SKILL.md) † | Honest encoding, accessibility, export and audit of data figures | en |
+| [`publication-chart-skill`](.claude/skills/publication-chart-skill/SKILL.md) † | Figure-vs-table decisions; the pubfig / pubtab route | en |
+| [`drawio-skill`](.claude/skills/drawio-skill/SKILL.md) † | Method and architecture diagrams as editable `.drawio` | en |
+| [`academic-humanizer`](.claude/skills/academic-humanizer/SKILL.md) † | Fact-preserving revision of academic prose | en |
+
+**Review and reading**
+
+| Skill | What it does | Lang |
+|---|---|---|
+| [`paper-review`](.claude/skills/paper-review/SKILL.md) | Graded review: L1 thesis and potential, L2 evidence chain, L3 simulated review; venue-neutral core plus one profile per venue | zh |
+| [`paper-reading`](.claude/skills/paper-reading/SKILL.md) | Graduate-level reading reports for one or more papers | en |
+
+**Session utilities**
+
+| Skill | What it does | Lang |
+|---|---|---|
+| [`task-forest`](.claude/skills/task-forest/SKILL.md) † | Repo-local task DAG and session close-out | en |
+| [`session-handoff-prompt`](.claude/skills/session-handoff-prompt/SKILL.md) † | Continuation prompt for a fresh session | en |
+
+† Bundled third-party skill, pinned to an upstream commit. See [License and credits](#license-and-credits).
+
+## Ground rules
+
+These are built into the skills. They are not suggestions.
+
+- **Thesis before experiments.** The baseline is the current strongest version, never an old one.
+- **Every outcome has somewhere to go.** The spine has two branches, the protocol has result-neutral checks, and a negative result is a finding.
+- **Derive before you test.** If existing numbers already answer a comparison, it is not a main comparison.
+- **Decision rules carry robustness requirements**, written per research type.
+- **A venue changes only the reader and the takeaway**, never the comparisons, rules or claim strength.
+- **The ledger is built in R3 and only inherited in R4.** Every number in the text traces to an output file.
+- **Additional analyses stay separate.** They are called "analyses", never "validation".
+- **Figures first, and the story never changes the evidence.**
+- **Authorization comes only from you.** Training, API calls, real data, protected sets, submission and anything sent outside each need your explicit go-ahead.
+- **Review looks at the rendered PDF**, not just the source.
+
+The reasoning behind each rule is in [CONTEXT.md](CONTEXT.md).
+
+## FAQ
+
+**Some skills are written in Chinese. Can I use them in English?**
+Yes. Every self-written skill has a bilingual `description`, so English requests trigger them, and the agent answers in your language. The section headings inside the generated templates stay as they are because `check_gates.py` parses them.
+
+**Will it run experiments or write the paper for me?**
+It plans, checks, routes and drafts against your evidence. It never runs training, API calls or real data without your authorization, and it never invents evidence or strengthens a claim beyond what the ledger supports.
+
+**Which venues are supported?**
+The review core is venue-neutral. Add a venue by writing one profile from the template in [venues/README.md](.claude/skills/paper-review/references/venues/README.md). Without a profile, the generic rubric plus an official-source check is used.
+
+**Can I use only some of the skills?**
+Yes. Each skill is a self-contained folder. Copy the ones you want into `~/.claude/skills` or `~/.codex/skills`.
+
+**Can I make the stage lock global?**
+Paste the snippet in [docs/global-instructions-snippet.md](docs/global-instructions-snippet.md) into your global `CLAUDE.md` or `AGENTS.md`.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+1. Propose a new rule in an issue first. Accepted rules go into [CONTEXT.md](CONTEXT.md) before they reach a `SKILL.md`.
+2. Keep each `description` bilingual, with Chinese and English trigger phrases.
+3. Add a venue as a single file under `paper-review/references/venues/`. Don't create a separate review skill for it.
+4. Don't edit bundled third-party skills. Adjust their behavior from the calling skill instead.
+5. Run `python3 scripts/validate_skills.py` before opening a PR. CI runs it, plus smoke tests of the scripts and `install.sh`.
+
+Conventions for agents working on this repository are in [AGENTS.md](AGENTS.md). Claude Code reads them through [CLAUDE.md](CLAUDE.md).
+
+**Status:** the eval cases in each skill's `evals/evals.json` are written but have not yet been run as baseline comparisons. Expect the workflow and templates to change.
+
+## License and credits
+
+The self-written skills, scripts and docs are released under the [MIT License](LICENSE).
+
+The bundled third-party skills are MIT-licensed by their authors. Copyright notices, full license texts, pinned commits and every local change are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+| Skill | Upstream |
+|---|---|
+| `scientific-visualization` | [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) |
+| `publication-chart-skill` | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) |
+| `drawio-skill` | [Agents365-ai/drawio-skill](https://github.com/Agents365-ai/drawio-skill) |
+| `academic-humanizer`, `task-forest`, `session-handoff-prompt` | [dongshuyan/compass-skills](https://github.com/dongshuyan/compass-skills) |
+
+Skills that are referenced in routing tables but not bundled (`$pdf`, `$jupyter-notebook`, `$academic-paper-ppt`, `$review-paper`) must be installed separately. Without them, the corresponding route is skipped.
